@@ -1,0 +1,7 @@
+name: GlasshouseTweaks
+version: '${project.version}'
+main: xyz.nickelulz.glasshousetweaks.GlasshouseTweaks
+api-version: 1.18
+authors: [ nickelulz ]
+description: This is a manager plugin for including various tweaks for managing a minecraft server, such as incorporating hits that works alongside a discord bot.
+website: https://github.com/nickelulz/GlasshouseTweaks
