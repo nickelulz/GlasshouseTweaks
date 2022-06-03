@@ -5,7 +5,9 @@ import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.util.Configuration;
 import xyz.nickelulz.glasshousetweaks.util.PlayerDatabase;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -19,9 +21,38 @@ public class User {
     private LocalDateTime lastPlacedHit, lastTargetedHit, lastContractedHit;
     private int kills, deaths;
 
+    /**
+     * Fresh user constructor
+     * @param discordId
+     * @param profile
+     */
     public User(String discordId, Player profile) {
+        this(discordId, profile, null, null, null, 0, 0);
+    }
+
+    public User(String discordId, Player profile, int kills, int deaths) {
+        this(discordId, profile, null, null, null, kills, deaths);
+    }
+
+    /**
+     * Full constructor
+     * @param discordId
+     * @param profile
+     * @param lastContractedHit
+     * @param lastTargetedHit
+     * @param lastPlacedHit
+     * @param kills
+     * @param deaths
+     */
+    public User(String discordId, Player profile, @Nullable LocalDateTime lastContractedHit,
+                @Nullable LocalDateTime lastTargetedHit, @Nullable LocalDateTime lastPlacedHit, int kills, int deaths) {
         this.discordId = discordId;
         this.profile = profile;
+        this.lastContractedHit = lastContractedHit;
+        this.lastTargetedHit = lastTargetedHit;
+        this.lastPlacedHit = lastPlacedHit;
+        this.kills = kills;
+        this.deaths = deaths;
     }
 
     /**

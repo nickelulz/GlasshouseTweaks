@@ -1,18 +1,43 @@
 package xyz.nickelulz.glasshousetweaks.util;
 
 import com.google.gson.*;
+import com.google.gson.stream.JsonToken;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.datatypes.Bounty;
 import xyz.nickelulz.glasshousetweaks.datatypes.Contract;
 import xyz.nickelulz.glasshousetweaks.datatypes.Hit;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
 
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 
 public class JSONHandlers {
     public static class UserJSON implements JsonSerializer<User>, JsonDeserializer<User> {
         @Override
         public User deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return null;
+            JsonObject values = json.getAsJsonObject();
+            String discordId = values.get("discordId").getAsString();
+            Player profile = Bukkit.getPlayer(values.get("profile").getAsString());
+            int kills = values.get("kills").getAsInt();
+            int deaths = values.get("deaths").getAsInt();
+
+            // date parsing
+            String lastPlacedHitRaw = values.get("lastPlacedHit").getAsString();
+            LocalDateTime lastPlacedHit = (lastPlacedHitRaw.equalsIgnoreCase("none") || lastPlacedHitRaw == null) ?
+                    null : LocalDateTime.parse(lastPlacedHitRaw);
+
+            String lastContractedHitRaw = values.get("lastContractedHitRaw").getAsString();
+            LocalDateTime lastContractedHit =
+                    (lastContractedHitRaw.equalsIgnoreCase("none") || lastContractedHitRaw == null) ?
+                    null : LocalDateTime.parse(lastContractedHitRaw);
+
+            String lastTargetedHitRaw = values.get("lastTargetedHit").getAsString();
+            LocalDateTime lastTargetedHit = (lastTargetedHitRaw.equalsIgnoreCase("none")|| lastTargetedHitRaw == null) ?
+                    null : LocalDateTime.parse(lastTargetedHitRaw);
+
+            return new User(discordId, profile, lastContractedHit, lastTargetedHit, lastPlacedHit, kills, deaths);
         }
 
         @Override
