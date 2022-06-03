@@ -1,0 +1,18 @@
+# The amount of time of cooldown between being allowed
+# to place new hits in minutes.
+# Default: 2 Hours.
+hiring-cooldown: 120
+
+# The amount of time of cooldown between being allowed
+# to accept and contract hits in minutes.
+# Default: 2 Hours.
+contracting-cooldown: 120
+
+# The amount of time of cooldown between being allowed
+# to be the target of a hit in minutes.
+# Default: 4 Hours.
+targeting-cooldown: 240
+
+# The minimum price required to place a hit on someone in diamonds.
+# Default: 10 diamonds.
+minimum-hit-price: 10
