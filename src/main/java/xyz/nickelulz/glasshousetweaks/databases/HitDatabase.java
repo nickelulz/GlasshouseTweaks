@@ -50,6 +50,14 @@ public class HitDatabase {
         return null;
     }
 
+    public ArrayList<Bounty> getBounties() {
+        ArrayList<Bounty> out = new ArrayList<>();
+        for (Hit h: activeHitsDatabase.getDataset())
+            if (h instanceof Bounty)
+                out.add((Bounty) h);
+        return out;
+    }
+
     public Hit findHitByPlacer(User placer) {
         for (Hit h: activeHitsDatabase.getDataset())
             if (h.getPlacer().equals(placer))
@@ -70,6 +78,17 @@ public class HitDatabase {
 
     public boolean isPlacer(User user) {
         return !(findHitByPlacer(user) == null);
+    }
+
+    public Contract findActiveContract(User contractor) {
+        for (Hit h: activeHitsDatabase.getDataset())
+            if (h instanceof Contract && !((Contract) h).isPending() && ((Contract)h).getContractor().equals(contractor))
+                return (Contract) h;
+        return null;
+    }
+
+    public boolean isContractor(User contractor) {
+        return !(findActiveContract(contractor) == null);
     }
 
     public boolean isActivePlacer(User user) {

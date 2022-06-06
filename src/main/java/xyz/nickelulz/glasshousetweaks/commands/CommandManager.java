@@ -9,6 +9,7 @@ import xyz.nickelulz.glasshousetweaks.commands.adminonly.ManageIllegalKillsComma
 import xyz.nickelulz.glasshousetweaks.commands.allaccess.LeaderboardCommand;
 import xyz.nickelulz.glasshousetweaks.commands.allaccess.RegisterCommand;
 import xyz.nickelulz.glasshousetweaks.commands.allaccess.TestCommand;
+import xyz.nickelulz.glasshousetweaks.commands.allaccess.ViewPlayerInfoCommand;
 import xyz.nickelulz.glasshousetweaks.commands.registeredonly.BountyCommand;
 import xyz.nickelulz.glasshousetweaks.commands.registeredonly.ContractCommand;
 import xyz.nickelulz.glasshousetweaks.commands.registeredonly.RemoveHitCommand;
@@ -44,6 +45,7 @@ public class CommandManager {
         registerCommand("register", new RegisterCommand());
         registerCommand("test", new TestCommand());
         registerCommand("leaderboard", new LeaderboardCommand());
+        registerCommand("playerinfo", new ViewPlayerInfoCommand());
 
         // Registered Only
         registerCommand("bounty", new BountyCommand());

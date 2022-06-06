@@ -1,5 +1,6 @@
 package xyz.nickelulz.glasshousetweaks.commands.adminonly;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
@@ -36,6 +37,11 @@ public class ManageIllegalKillsCommand extends CommandBase {
         switch (mode) {
             case "list":
             {
+                if (args.length != 1) {
+                    sendSpecializedSyntax(sender, mode);
+                    return true;
+                }
+
                 ArrayList<Attack> illegalAttacks = GlasshouseTweaks.getIllegalkillDatabase().getDataset();
                 if (illegalAttacks.size() == 0)
                     reply(sender, "There are no pending illegal kills.");
@@ -49,6 +55,11 @@ public class ManageIllegalKillsCommand extends CommandBase {
 
             case "remove":
             {
+                if (args.length != 3) {
+                    sendSpecializedSyntax(sender, mode);
+                    return true;
+                }
+
                 User attacker = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
                 User victim = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[2]);
 
@@ -84,7 +95,11 @@ public class ManageIllegalKillsCommand extends CommandBase {
 
     @Override
     public String getSyntax() {
-        return "/illegalkills <list/revoke/accept>";
+        return "/illegalkills <list/remove>";
+    }
+
+    public void sendSpecializedSyntax(CommandSender sender, String mode) {
+        sender.sendMessage(ChatColor.GRAY + getSpecializedSyntax(mode));
     }
 
     public String getSpecializedSyntax(String mode) {

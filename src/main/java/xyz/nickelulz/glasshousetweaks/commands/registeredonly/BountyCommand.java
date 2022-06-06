@@ -1,5 +1,6 @@
 package xyz.nickelulz.glasshousetweaks.commands.registeredonly;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
@@ -10,6 +11,7 @@ import xyz.nickelulz.glasshousetweaks.datatypes.User;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class BountyCommand extends CommandBase {
     public BountyCommand() {
@@ -22,6 +24,11 @@ public class BountyCommand extends CommandBase {
         switch (mode) {
             case "place":
             {
+                if (args.length != 3) {
+                    sendSpecializedSyntax(sender, mode);
+                    return true;
+                }
+
                 User user = GlasshouseTweaks.getPlayersDatabase().findByProfile((Player) sender);
                 User target = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[2]);
                 int price = 0;
@@ -82,13 +89,25 @@ public class BountyCommand extends CommandBase {
 
             case "list":
             {
-                reply(sender, "===== BOUNTIES =====");
-                int index = 1;
-                for (Hit h : GlasshouseTweaks.getHitsDatabase().getActiveHits())
-                    if (h instanceof Bounty)
-                        reply(sender, index++ + ": " + h.toSimpleString());
-                reply(sender, "====================");
-                return true;
+                if (args.length != 1) {
+                    sendSpecializedSyntax(sender, mode);
+                    return true;
+                }
+
+                ArrayList<Bounty> bounties = GlasshouseTweaks.getHitsDatabase().getBounties();
+                if (bounties.isEmpty()) {
+                    reply(sender, "There are no bounties currently placed.");
+                    return true;
+                }
+                else {
+                    reply(sender, "===== BOUNTIES =====");
+                    int index = 1;
+                    for (Hit h : GlasshouseTweaks.getHitsDatabase().getActiveHits())
+                        if (h instanceof Bounty)
+                            reply(sender, index++ + ": " + h.toSimpleString());
+                    reply(sender, "===================");
+                    return true;
+                }
             }
 
             default:
@@ -100,6 +119,10 @@ public class BountyCommand extends CommandBase {
     @Override
     public String getSyntax() {
         return "/bounty <place/list>";
+    }
+
+    public void sendSpecializedSyntax(CommandSender sender, String mode) {
+        sender.sendMessage(ChatColor.GRAY + getSpecializedSyntax(mode));
     }
 
     public String getSpecializedSyntax(String mode) {

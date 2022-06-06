@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class ContractCommand extends CommandBase {
 
     public ContractCommand() {
-        super("contract", 2, 4, true);
+        super("contract", 1, 4, true);
     }
 
     @Override
@@ -31,6 +31,11 @@ public class ContractCommand extends CommandBase {
         switch (mode) {
             case "place":
             {
+                if (args.length != 4) {
+                    sendSpecializedSyntax(sender, mode);
+                    return true;
+                }
+
                 User target = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
                 User contractor = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[3]);
                 int price;
@@ -88,6 +93,11 @@ public class ContractCommand extends CommandBase {
             case "accept":
             case "deny":
             {
+                if (args.length != 3) {
+                    sendSpecializedSyntax(sender, mode);
+                    return true;
+                }
+
                 User target = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
                 User hirer = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[2]);
 
@@ -134,6 +144,11 @@ public class ContractCommand extends CommandBase {
 
             case "view":
             {
+                if (args.length != 1) {
+                    sendSpecializedSyntax(sender, mode);
+                    return true;
+                }
+
                 ArrayList<Contract> userContracts = GlasshouseTweaks.getHitsDatabase().getContracts(user);
                 Contract active = null;
 
@@ -175,6 +190,10 @@ public class ContractCommand extends CommandBase {
     @Override
     public String getSyntax() {
         return "/contract <place/view/accept/deny>";
+    }
+
+    public void sendSpecializedSyntax(CommandSender sender, String mode) {
+        sender.sendMessage(ChatColor.GRAY + getSpecializedSyntax(mode));
     }
 
     public String getSpecializedSyntax(String mode) {

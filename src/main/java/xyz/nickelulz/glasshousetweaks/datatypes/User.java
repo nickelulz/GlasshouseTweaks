@@ -1,6 +1,7 @@
 package xyz.nickelulz.glasshousetweaks.datatypes;
 
 import org.bukkit.entity.Player;
+import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
 import xyz.nickelulz.glasshousetweaks.databases.PlayerDatabase;
 
@@ -76,7 +77,7 @@ public class User {
             int cooldown = Math.signum(cooldown_raw) == 1.0f ? cooldown_raw : 0;
             if (cooldown == 0) {
                 lastPlacedHit = null;
-                PlayerDatabase.save();
+                GlasshouseTweaks.getPlayersDatabase().save();
             }
             return cooldown;
         }
@@ -104,7 +105,7 @@ public class User {
             int cooldown = Math.signum(cooldown_raw) == 1.0f ? cooldown_raw : 0;
             if (cooldown == 0) {
                 lastTargetedHit = null;
-                PlayerDatabase.save();
+                GlasshouseTweaks.getPlayersDatabase().save();
             }
             return cooldown;
         }
@@ -133,7 +134,7 @@ public class User {
             int cooldown = Math.signum(cooldown_raw) == 1.0f ? cooldown_raw : 0;
             if (cooldown == 0) {
                 lastContractedHit = null;
-                PlayerDatabase.save();
+                GlasshouseTweaks.getPlayersDatabase().save();
             }
             return cooldown;
         }

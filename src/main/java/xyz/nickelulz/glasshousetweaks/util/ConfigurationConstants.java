@@ -67,4 +67,6 @@ public class ConfigurationConstants {
     public static final String HIRER_BUSY = "You already have an active hit! You cannot have more than one hit at " +
             "once!";
     public static final String USER_NOT_ADMIN = "This command requires you to be an admin.";
+    public static final String PLAYER_NOT_FOUND = "The player you have selected was not found. Perhaps you have " +
+            "misspelled their name.";
 }
