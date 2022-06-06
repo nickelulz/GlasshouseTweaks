@@ -2,7 +2,7 @@ package xyz.nickelulz.glasshousetweaks.datatypes;
 
 import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
-import xyz.nickelulz.glasshousetweaks.database.PlayerDatabase;
+import xyz.nickelulz.glasshousetweaks.databases.PlayerDatabase;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;

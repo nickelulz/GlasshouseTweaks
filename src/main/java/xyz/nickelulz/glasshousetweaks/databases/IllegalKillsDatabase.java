@@ -1,4 +1,4 @@
-package xyz.nickelulz.glasshousetweaks.database;
+package xyz.nickelulz.glasshousetweaks.databases;
 
 import xyz.nickelulz.glasshousetweaks.datatypes.Attack;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
@@ -6,7 +6,7 @@ import xyz.nickelulz.glasshousetweaks.datatypes.User;
 public class IllegalKillsDatabase extends Database<Attack> {
 
     public IllegalKillsDatabase() {
-        super("illegalkills.json", Attack.class, new JSONHandlers.AttackJSON());
+        super("illegalkills.json", Attack.class, Attack[].class, new JSONHandlers.AttackJSON());
     }
 
     @Override

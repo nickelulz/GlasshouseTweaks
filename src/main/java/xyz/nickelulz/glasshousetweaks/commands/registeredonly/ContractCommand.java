@@ -3,12 +3,11 @@ package xyz.nickelulz.glasshousetweaks.commands.registeredonly;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.commands.CommandBase;
 import xyz.nickelulz.glasshousetweaks.datatypes.Contract;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
-import xyz.nickelulz.glasshousetweaks.database.HitDatabase;
-import xyz.nickelulz.glasshousetweaks.database.PlayerDatabase;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ public class ContractCommand extends CommandBase {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
-        User user = PlayerDatabase.findByProfile((Player) sender);
+        User user = GlasshouseTweaks.getPlayersDatabase().findByProfile((Player) sender);
         String mode = args[0];
 
         if (user == null) {
@@ -32,9 +31,9 @@ public class ContractCommand extends CommandBase {
         switch (mode) {
             case "place":
             {
-                User target = PlayerDatabase.findByIGN(args[1]);
-                int price = 0;
-                User contractor = PlayerDatabase.findByIGN(args[3]);
+                User target = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
+                User contractor = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[3]);
+                int price;
 
                 if (target == null) {
                     error(sender, ConfigurationConstants.TARGET_NOT_FOUND, getSpecializedSyntax(mode));
@@ -58,12 +57,12 @@ public class ContractCommand extends CommandBase {
                     return true;
                 }
 
-                if (HitDatabase.isPlacer(user)) {
+                if (GlasshouseTweaks.getHitsDatabase().isPlacer(user)) {
                     error(sender, ConfigurationConstants.TOO_MANY_HITS);
                     return true;
                 }
 
-                if (HitDatabase.isTarget(target)) {
+                if (GlasshouseTweaks.getHitsDatabase().isTarget(target)) {
                     error(sender, ConfigurationConstants.TARGET_IS_BUSY);
                     return true;
                 }
@@ -80,7 +79,7 @@ public class ContractCommand extends CommandBase {
                     return true;
                 }
 
-                HitDatabase.add(new Contract(user, target, price, LocalDateTime.now(), contractor, true));
+                GlasshouseTweaks.getHitsDatabase().add(new Contract(user, target, price, LocalDateTime.now(), contractor, true));
                 reply(sender, String.format("Placed new contract on %s with %s as the contractor for %d diamonds.",
                         target.getProfile().getName(), contractor.getProfile().getName(), price));
                 return true;
@@ -89,8 +88,8 @@ public class ContractCommand extends CommandBase {
             case "accept":
             case "deny":
             {
-                User target = PlayerDatabase.findByIGN(args[1]);
-                User hirer = PlayerDatabase.findByIGN(args[2]);
+                User target = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
+                User hirer = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[2]);
 
                 if (target == null) {
                     error(sender, ConfigurationConstants.TARGET_NOT_FOUND, getSpecializedSyntax(mode));
@@ -102,7 +101,7 @@ public class ContractCommand extends CommandBase {
                     return true;
                 }
 
-                Contract contract = HitDatabase.findContract(target, user);
+                Contract contract = GlasshouseTweaks.getHitsDatabase().findContract(target, user);
 
                 if (contract == null) {
                     error(sender, "Could not find contract against " + target.getProfile().getName() + " with" +
@@ -122,7 +121,7 @@ public class ContractCommand extends CommandBase {
 
                     case "deny":
                     {
-                        HitDatabase.remove(contract);
+                        GlasshouseTweaks.getHitsDatabase().remove(contract);
                         // DM placer
                         reply(sender, "Denied contract from " + contract.getPlacer().getProfile().getName() + " on " +
                                 contract.getTarget().getProfile().getName() + "for " + contract.getPrice() + " diamonds.");
@@ -135,7 +134,7 @@ public class ContractCommand extends CommandBase {
 
             case "view":
             {
-                ArrayList<Contract> userContracts = HitDatabase.getContracts(user);
+                ArrayList<Contract> userContracts = GlasshouseTweaks.getHitsDatabase().getContracts(user);
                 Contract active = null;
 
                 for (Contract c: userContracts)

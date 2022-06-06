@@ -1,16 +1,8 @@
-package xyz.nickelulz.glasshousetweaks.database;
+package xyz.nickelulz.glasshousetweaks.databases;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.checkerframework.checker.units.qual.A;
-import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.datatypes.*;
 
-import java.io.*;
-import java.lang.reflect.InaccessibleObjectException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.logging.Level;
 
 public class HitDatabase {
     ActiveHitsDatabase activeHitsDatabase;
@@ -21,37 +13,53 @@ public class HitDatabase {
         completedHitsDatabase = new CompletedHitsDatabase();
     }
 
+    public ActiveHitsDatabase getActiveHitsDatabase() {
+        return activeHitsDatabase;
+    }
+
+    public CompletedHitsDatabase getCompletedHitsDatabase() {
+        return completedHitsDatabase;
+    }
+
+    public boolean add(Hit input) {
+        return activeHitsDatabase.add(input);
+    }
+
+    public boolean remove(Hit input) {
+        return activeHitsDatabase.remove(input);
+    }
+
     public boolean containsHit(Hit hit) {
-        for (Hit h: hits)
+        for (Hit h: activeHitsDatabase.getDataset())
             if (hit.equals(h))
                 return true;
         return false;
     }
 
     public Hit findHitByTarget(User target) {
-        for (Hit h: hits)
+        for (Hit h: activeHitsDatabase.getDataset())
             if (h.getTarget().equals(target))
                 return h;
         return null;
     }
 
     public Bounty findBountyByTarget(User target) {
-        for (Hit h: hits)
+        for (Hit h: activeHitsDatabase.getDataset())
             if (h instanceof Bounty && h.getTarget().equals(target))
                 return (Bounty) h;
         return null;
     }
 
     public Hit findHitByPlacer(User placer) {
-        for (Hit h: hits)
+        for (Hit h: activeHitsDatabase.getDataset())
             if (h.getPlacer().equals(placer))
                 return h;
         return null;
     }
 
     public Contract findContract(User target, User contractor) {
-        for (Hit h: hits)
-            if (h instanceof Contract && ((Contract) h).getTarget().equals(target) && ((Contract) h).getContractor().equals(contractor))
+        for (Hit h: activeHitsDatabase.getDataset())
+            if (h instanceof Contract && h.getTarget().equals(target) && ((Contract) h).getContractor().equals(contractor))
                 return (Contract) h;
         return null;
     }
@@ -65,7 +73,7 @@ public class HitDatabase {
     }
 
     public boolean isActivePlacer(User user) {
-        for (Hit h: hits)
+        for (Hit h: activeHitsDatabase.getDataset())
             if (h.getPlacer().equals(user) && h instanceof Bounty ||
                     (h instanceof Contract && !((Contract) h).isPending()))
                 return true;
@@ -77,53 +85,32 @@ public class HitDatabase {
         if (success) {
             claimer.setKills(claimer.getKills()+1);
             hit.getTarget().setDeaths(hit.getTarget().getDeaths()+1);
-            success = completedHits.add(hit);
+            success = completedHitsDatabase.add(hit);
         }
         return success;
     }
 
     public ArrayList<Contract> getContracts(User contractor) {
         ArrayList<Contract> contracts = new ArrayList<>();
-        for (Hit h: hits)
+        for (Hit h: activeHitsDatabase.getDataset())
             if (h instanceof Contract && ((Contract) h).getContractor().equals(contractor))
                 contracts.add((Contract) h);
         return contracts;
     }
 
-    public ArrayList<Hit> getHits() {
-        return hits;
+    public ArrayList<Hit> getActiveHits() {
+        return activeHitsDatabase.getDataset();
     }
 }
 
-public class ActiveHitsDatabase extends Database<Hit> {
-
+class ActiveHitsDatabase extends Database<Hit> {
     public ActiveHitsDatabase() {
-        super("hits.json", Hit.class, new JSONHandlers.HitJSON());
-    }
-
-    @Override
-    public boolean reload() {
-        return false;
-    }
-
-    @Override
-    public boolean save() {
-        return false;
+        super("hits.json", Hit.class, Hit[].class, new JSONHandlers.HitJSON());
     }
 }
 
-public class CompletedHitsDatabase extends Database<Hit> {
+class CompletedHitsDatabase extends Database<Hit> {
     public CompletedHitsDatabase() {
-        super("completed_hits.json", Hit.class, new JSONHandlers.HitJSON());
-    }
-
-    @Override
-    public boolean reload() {
-        return false;
-    }
-
-    @Override
-    public boolean save() {
-        return false;
+        super("completed_hits.json", Hit.class, Hit[].class, new JSONHandlers.HitJSON());
     }
 }

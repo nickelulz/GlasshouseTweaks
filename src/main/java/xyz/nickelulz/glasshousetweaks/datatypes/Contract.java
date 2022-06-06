@@ -32,10 +32,10 @@ public class Contract extends Hit {
      * @param contractor The contractor of this contract
      * @param pending Whether this hit has been accepted yet
      */
-    public Contract(User placer, User target, int price, LocalDateTime timePlaced, User claimer, LocalDateTime timeClaimed, User contractor, boolean pending) {
+    public Contract(User placer, User target, int price, LocalDateTime timePlaced, User claimer, LocalDateTime timeClaimed, User contractor) {
         super(placer, target, price, timePlaced, claimer, timeClaimed);
         this.contractor = contractor;
-        this.pending = pending;
+        this.pending = false;
     }
 
     @Override

@@ -2,12 +2,11 @@ package xyz.nickelulz.glasshousetweaks.commands.adminonly;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.commands.CommandBase;
 import xyz.nickelulz.glasshousetweaks.datatypes.Attack;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
-import xyz.nickelulz.glasshousetweaks.database.HitDatabase;
-import xyz.nickelulz.glasshousetweaks.database.PlayerDatabase;
 
 import java.util.ArrayList;
 
@@ -21,7 +20,7 @@ public class ManageIllegalKillsCommand extends CommandBase {
         String mode = args[0];
 
         if (sender instanceof Player) {
-            User user = PlayerDatabase.findByProfile((Player) sender);
+            User user = GlasshouseTweaks.getPlayersDatabase().findByProfile((Player) sender);
 
             if (user == null) {
                 error(sender, ConfigurationConstants.USER_NOT_REGISTERED);
@@ -37,7 +36,7 @@ public class ManageIllegalKillsCommand extends CommandBase {
         switch (mode) {
             case "list":
             {
-                ArrayList<Attack> illegalAttacks = HitDatabase.getIllegalAttacks();
+                ArrayList<Attack> illegalAttacks = GlasshouseTweaks.getIllegalkillDatabase().getDataset();
                 if (illegalAttacks.size() == 0)
                     reply(sender, "There are no pending illegal kills.");
                 else {
@@ -50,8 +49,8 @@ public class ManageIllegalKillsCommand extends CommandBase {
 
             case "remove":
             {
-                User attacker = PlayerDatabase.findByIGN(args[1]);
-                User victim = PlayerDatabase.findByIGN(args[2]);
+                User attacker = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
+                User victim = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[2]);
 
                 if (attacker == null) {
                     error(sender, "Attacker not found in registry.", getSpecializedSyntax(mode));
@@ -63,7 +62,7 @@ public class ManageIllegalKillsCommand extends CommandBase {
                     return true;
                 }
 
-                Attack illegalAttack = HitDatabase.findIllegalAttack(attacker, victim);
+                Attack illegalAttack = GlasshouseTweaks.getIllegalkillDatabase().find(attacker, victim);
 
                 if (illegalAttack == null) {
                     error(sender, "There was no illegal attack found with " + victim.getProfile().getName() + " as " +
@@ -71,7 +70,7 @@ public class ManageIllegalKillsCommand extends CommandBase {
                     return true;
                 }
 
-                HitDatabase.removeIllegalAttack(illegalAttack);
+                GlasshouseTweaks.getIllegalkillDatabase().remove(illegalAttack);
                 reply(sender, "Removed illegal attack by " + attacker.getProfile().getName() + " on " + victim.getProfile().getName() + ".");
 
                 return true;

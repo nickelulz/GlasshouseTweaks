@@ -2,9 +2,9 @@ package xyz.nickelulz.glasshousetweaks.commands.allaccess;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.commands.CommandBase;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
-import xyz.nickelulz.glasshousetweaks.database.PlayerDatabase;
 
 import java.util.ArrayList;
 
@@ -17,14 +17,14 @@ public class LeaderboardCommand extends CommandBase {
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
 
+        if (GlasshouseTweaks.getPlayersDatabase().size() == 0) {
+            sender.sendMessage(ChatColor.GRAY + "Nobody is currently registered.");
+            return true;
+        }
+
         switch (args[0]) {
             case "kills": {
-                if (PlayerDatabase.size() == 0) {
-                    sender.sendMessage(ChatColor.GRAY + "Nobody is currently registered.");
-                    return true;
-                }
-
-                ArrayList<User> killsLeaderboard = new ArrayList<>(PlayerDatabase.getUsers());
+                ArrayList<User> killsLeaderboard = new ArrayList<>(GlasshouseTweaks.getPlayersDatabase().getDataset());
                 sort(1, killsLeaderboard);
                 sender.sendMessage(ChatColor.GRAY + "===== KILLS =====");
                 for (int i = 0; i < killsLeaderboard.size(); i++)
@@ -35,12 +35,7 @@ public class LeaderboardCommand extends CommandBase {
             }
 
             case "deaths": {
-                if (PlayerDatabase.size() == 0) {
-                    sender.sendMessage(ChatColor.GRAY + "Nobody is currently registered.");
-                    return true;
-                }
-
-                ArrayList<User> deathsLeaderboard = new ArrayList<>(PlayerDatabase.getUsers());
+                ArrayList<User> deathsLeaderboard = new ArrayList<>(GlasshouseTweaks.getPlayersDatabase().getDataset());
                 sort(0, deathsLeaderboard);
                 sender.sendMessage(ChatColor.GRAY + "===== DEATHS =====");
                 for (int i = 0; i < deathsLeaderboard.size(); i++)

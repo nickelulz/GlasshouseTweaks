@@ -1,9 +1,8 @@
-package xyz.nickelulz.glasshousetweaks.database;
+package xyz.nickelulz.glasshousetweaks.databases;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
-import xyz.nickelulz.glasshousetweaks.datatypes.Hit;
 
 import java.io.File;
 import java.io.FileReader;
@@ -19,11 +18,14 @@ public abstract class Database<T> {
     private ArrayList<T> dataset;
     private File database;
     private Gson jsonParser;
+    private Type jsonTypeFrom;
 
-    public Database(String filename, Type jsonType, Object typeAdapter) {
-        dataset = new ArrayList<>();
-        database = new File(GlasshouseTweaks.getInstance().getDataFolder().getAbsolutePath() + "/" + filename);
-        jsonParser = new GsonBuilder().registerTypeAdapter(jsonType, typeAdapter).setPrettyPrinting().create();
+    public Database(String filename, Type jsonTypeTo, Type jsonTypeFrom, Object typeAdapter) {
+        this.dataset = new ArrayList<>();
+        this.database = new File(GlasshouseTweaks.getInstance().getDataFolder().getAbsolutePath() +
+                "/" + filename);
+        this.jsonParser = new GsonBuilder().registerTypeAdapter(jsonTypeTo, typeAdapter).setPrettyPrinting().create();
+        this.jsonTypeFrom = jsonTypeFrom;
 
         try {
             ensureExists();
@@ -45,17 +47,18 @@ public abstract class Database<T> {
         try {
             ensureExists();
             FileReader in = new FileReader(database);
-            T[] list = jsonParser.fromJson(in, );
+            T[] list = jsonParser.fromJson(in, jsonTypeFrom);
             if (list == null) {
-                GlasshouseTweaks.log(Level.SEVERE, "Could not parse database " + database.getName() + ". List is NULL" +
-                        ".");
+                GlasshouseTweaks.log(Level.SEVERE, "Could not parse database " +
+                        database.getName() + ". List is NULL.");
                 return false;
             }
             dataset = new ArrayList<>(Arrays.asList(list));
             GlasshouseTweaks.log(Level.INFO, "Loaded database " + database.getName() + ".");
             return true;
         } catch (IOException | NullPointerException | InaccessibleObjectException e) {
-            GlasshouseTweaks.log(Level.SEVERE, "Could not load database " + database.getName() + " due to " + e.getClass().getName());
+            GlasshouseTweaks.log(Level.SEVERE, "Could not load database " + database.getName() +
+                    " due to " + e.getClass().getName());
         }
         return false;
     }
@@ -70,7 +73,8 @@ public abstract class Database<T> {
             GlasshouseTweaks.log(Level.INFO, "Saved database " + database.getName() + ".");
             return true;
         } catch (IOException | NullPointerException | InaccessibleObjectException e) {
-            GlasshouseTweaks.log(Level.SEVERE, "Could not save database " + database.getName() + " due to " + e.getClass().getName());
+            GlasshouseTweaks.log(Level.SEVERE, "Could not save database " + database.getName() +
+                    " due to " + e.getClass().getName());
         }
         return false;
     }

@@ -9,19 +9,25 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.nickelulz.glasshousetweaks.commands.CommandManager;
+import xyz.nickelulz.glasshousetweaks.databases.HitDatabase;
+import xyz.nickelulz.glasshousetweaks.databases.IllegalKillsDatabase;
+import xyz.nickelulz.glasshousetweaks.databases.PlayerDatabase;
+import xyz.nickelulz.glasshousetweaks.datatypes.Attack;
 import xyz.nickelulz.glasshousetweaks.datatypes.Bounty;
 import xyz.nickelulz.glasshousetweaks.datatypes.Contract;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
-import xyz.nickelulz.glasshousetweaks.database.HitDatabase;
-import xyz.nickelulz.glasshousetweaks.database.PlayerDatabase;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class GlasshouseTweaks extends JavaPlugin implements Listener {
     private static GlasshouseTweaks instance;
+    private static PlayerDatabase players;
+    private static HitDatabase hits;
+    private static IllegalKillsDatabase illegalkills;
 
     @Override
     public void onEnable() {
@@ -36,8 +42,9 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
         CommandManager.initialize();
 
         // Load databases
-        PlayerDatabase.load();
-        HitDatabase.load();
+        players = new PlayerDatabase();
+        hits = new HitDatabase();
+        illegalkills = new IllegalKillsDatabase();
     }
 
     @EventHandler
@@ -52,7 +59,7 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                     "DO NOT place hits or attack them for their first day on the server, as that is their grace " +
                     "period!");
         }
-        else if (!PlayerDatabase.isRegistered(player)) {
+        else if (!players.isRegistered(player)) {
             player.sendMessage(ChatColor.AQUA + "You are not registered. Make sure to register using " + ChatColor.DARK_GREEN + "/register" + ChatColor.AQUA + ".");
         }
     }
@@ -61,28 +68,21 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
 
-        /**
-         * Killer is a player.
-         */
+        // Killer is a player.
         if (victim.getKiller() != null) {
             Player killer = victim.getKiller();
             boolean illegal = true;
 
-            /**
-             * Affirms that victim and killer are both registered players
-             */
-            if (PlayerDatabase.isRegistered(victim) && PlayerDatabase.isRegistered(killer)) {
-                User victimUser = PlayerDatabase.findByProfile(victim);
-                User killerUser = PlayerDatabase.findByProfile(killer);
+            // Affirms that victim and killer are both registered players
+            if (players.isRegistered(victim) && players.isRegistered(killer)) {
+                User victimUser = players.findByProfile(victim);
+                User killerUser = players.findByProfile(killer);
                 if (victimUser != null && killerUser != null) {
 
-                    /**
-                     * Initial check: the killer is countering a contract
-                     * placed on them.
-                     */
-                    Contract victimActiveContract = HitDatabase.findContract(killerUser, victimUser);
+                    // Initial check: the killer is countering a contract placed on them.
+                    Contract victimActiveContract = hits.findContract(killerUser, victimUser);
                     if (victimActiveContract != null) {
-                        HitDatabase.claim(killerUser, victimActiveContract);
+                        hits.claim(killerUser, victimActiveContract);
                         illegal = false;
                     }
 
@@ -91,7 +91,7 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                         /**
                          * Second check: Killer is "countering" a bounty placed on them.
                          */
-                        Bounty victimActiveBounty = HitDatabase.findBountyByTarget(killerUser);
+                        Bounty victimActiveBounty = hits.findBountyByTarget(killerUser);
                         if (victimActiveBounty != null)
                             // Cannot claim, but not illegal.
                             illegal = false;
@@ -100,9 +100,9 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                             /**
                              * Initial check: The killer is executing an outwards contract.
                              */
-                            Contract killerActiveContract = HitDatabase.findContract(victimUser, killerUser);
+                            Contract killerActiveContract = hits.findContract(victimUser, killerUser);
                             if (killerActiveContract != null) {
-                                HitDatabase.claim(killerUser, killerActiveContract);
+                                hits.claim(killerUser, killerActiveContract);
                                 illegal = false;
                             }
 
@@ -111,9 +111,9 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                                 /**
                                  * Second check: The killer is executing an outwards bounty.
                                  */
-                                Bounty activeBounty = HitDatabase.findBountyByTarget(victimUser);
+                                Bounty activeBounty = hits.findBountyByTarget(victimUser);
                                 if (activeBounty != null) {
-                                    HitDatabase.claim(killerUser, activeBounty);
+                                    hits.claim(killerUser, activeBounty);
                                     illegal = false;
                                 }
 
@@ -139,6 +139,7 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                 event.setDeathMessage(String.format(ChatColor.RED + "%s illegally killed %s! You are not " +
                                 "allowed to kill without a hit " + ChatColor.GREEN + " unless it is a saturday. ",
                         killer.getName(), victim.getName()));
+                illegalkills.add(new Attack(killer, victim, LocalDateTime.now()));
             }
         }
     }
@@ -147,7 +148,7 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
     public void onDisable() {
         // Plugin shutdown logic
         log(Level.INFO, "Plugin stopped.");
-        PlayerDatabase.save();
+        players.save();
     }
 
     public static GlasshouseTweaks getInstance() {
@@ -162,5 +163,17 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
 
     public static void log(Level level, String outputMessage) {
         Logger.getLogger("Minecraft").log(level, "[GlasshouseTweaks] " + outputMessage);
+    }
+
+    public static PlayerDatabase getPlayersDatabase() {
+        return players;
+    }
+
+    public static HitDatabase getHitsDatabase() {
+        return hits;
+    }
+
+    public static IllegalKillsDatabase getIllegalkillDatabase() {
+        return illegalkills;
     }
 }
