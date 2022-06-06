@@ -1,13 +1,10 @@
 package xyz.nickelulz.glasshousetweaks.datatypes;
 
-import com.google.gson.*;
 import org.bukkit.entity.Player;
-import xyz.nickelulz.glasshousetweaks.util.Configuration;
-import xyz.nickelulz.glasshousetweaks.util.PlayerDatabase;
+import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
+import xyz.nickelulz.glasshousetweaks.database.PlayerDatabase;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -75,7 +72,7 @@ public class User {
         if (lastPlacedHit == null)
             return 0;
         else {
-            int cooldown_raw = Configuration.HIRING_COOLDOWN - minutesSinceDate(lastPlacedHit);
+            int cooldown_raw = ConfigurationConstants.HIRING_COOLDOWN - minutesSinceDate(lastPlacedHit);
             int cooldown = Math.signum(cooldown_raw) == 1.0f ? cooldown_raw : 0;
             if (cooldown == 0) {
                 lastPlacedHit = null;
@@ -103,7 +100,7 @@ public class User {
         if (lastTargetedHit == null)
             return 0;
         else {
-            int cooldown_raw = Configuration.TARGETING_COOLDOWN - minutesSinceDate(lastTargetedHit);
+            int cooldown_raw = ConfigurationConstants.TARGETING_COOLDOWN - minutesSinceDate(lastTargetedHit);
             int cooldown = Math.signum(cooldown_raw) == 1.0f ? cooldown_raw : 0;
             if (cooldown == 0) {
                 lastTargetedHit = null;
@@ -132,7 +129,7 @@ public class User {
         if (lastContractedHit == null)
             return 0;
         else {
-            int cooldown_raw = Configuration.CONTRACTING_COOLDOWN - minutesSinceDate(lastContractedHit);
+            int cooldown_raw = ConfigurationConstants.CONTRACTING_COOLDOWN - minutesSinceDate(lastContractedHit);
             int cooldown = Math.signum(cooldown_raw) == 1.0f ? cooldown_raw : 0;
             if (cooldown == 0) {
                 lastContractedHit = null;

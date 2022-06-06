@@ -1,9 +1,9 @@
-package xyz.nickelulz.glasshousetweaks.commands;
+package xyz.nickelulz.glasshousetweaks.commands.allaccess;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import xyz.nickelulz.glasshousetweaks.datatypes.CommandBase;
+import xyz.nickelulz.glasshousetweaks.commands.CommandBase;
 
 public class TestCommand extends CommandBase {
     public TestCommand() {
@@ -18,7 +18,7 @@ public class TestCommand extends CommandBase {
     }
 
     @Override
-    public String getUsage() {
+    public String getSyntax() {
         return "/test";
     }
 }

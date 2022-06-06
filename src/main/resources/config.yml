@@ -16,3 +16,7 @@ targeting-cooldown: 240
 # The minimum price required to place a hit on someone in diamonds.
 # Default: 10 diamonds.
 minimum-hit-price: 10
+
+# The day of the week to be "anarchy day".
+# Leave commented to disable.
+anarchy-day: "saturday"

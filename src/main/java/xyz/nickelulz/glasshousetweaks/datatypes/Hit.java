@@ -1,6 +1,7 @@
 package xyz.nickelulz.glasshousetweaks.datatypes;
 
 import com.google.gson.*;
+import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
@@ -43,7 +44,12 @@ abstract public class Hit {
     @Override
     public String toString() {
         return String.format("Placed by %s at %s on %s for %d diamonds.", placer.getProfile().getName(),
-                timePlaced.toString(), target.getProfile().getName(), price);
+                timePlaced.format(ConfigurationConstants.DATE_FORMAT), target.getProfile().getName(), price);
+    }
+
+    public String toSimpleString() {
+        return String.format("Target: %s, Placed by %s for %d diamonds.", target.getProfile().getName(),
+                placer.getProfile().getName(), price);
     }
 
     @Override

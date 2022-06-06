@@ -1,11 +1,11 @@
-package xyz.nickelulz.glasshousetweaks.commands;
+package xyz.nickelulz.glasshousetweaks.commands.allaccess;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import xyz.nickelulz.glasshousetweaks.datatypes.CommandBase;
+import xyz.nickelulz.glasshousetweaks.commands.CommandBase;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
-import xyz.nickelulz.glasshousetweaks.util.PlayerDatabase;
+import xyz.nickelulz.glasshousetweaks.database.PlayerDatabase;
 
 /**
  * Requires the use of a discord id for now, but going to change to
@@ -25,14 +25,14 @@ public class RegisterCommand extends CommandBase {
         }
         String discordId = args[0];
         if (PlayerDatabase.add(new User(discordId, player)))
-            player.sendMessage(ChatColor.GREEN + "You are now registered as " + ChatColor.GRAY + discordId);
+            player.sendMessage(ChatColor.GREEN + "You are now registered as " + ChatColor.GRAY + discordId + ChatColor.GREEN + ".");
         else
             player.sendMessage(ChatColor.RED + "Failed to register you! (Contact a server administrator..)");
         return true;
     }
 
     @Override
-    public String getUsage() {
+    public String getSyntax() {
         return "/register <discordId>";
     }
 }

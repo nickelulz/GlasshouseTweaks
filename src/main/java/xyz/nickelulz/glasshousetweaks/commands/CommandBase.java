@@ -1,21 +1,23 @@
-package xyz.nickelulz.glasshousetweaks.datatypes;
+package xyz.nickelulz.glasshousetweaks.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.SimplePluginManager;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
+
+/**
+ * Credit:
+ * https://www.youtube.com/watch?v=2jPrzfx3PMU
+ * Worn Off Keys, 2021
+ */
 public abstract class CommandBase extends BukkitCommand implements CommandExecutor {
     private List<String> delayedPlayers;
     private int delay = 0;
@@ -49,25 +51,6 @@ public abstract class CommandBase extends BukkitCommand implements CommandExecut
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
         this.playerOnly = playerOnly;
-        CommandMap commandMap = getCommandMap();
-        if (commandMap != null) {
-            commandMap.register(command, this);
-            GlasshouseTweaks.log(Level.INFO, "Registered command " + command + ".");
-        }
-    }
-
-    public CommandMap getCommandMap() {
-        try {
-            if (Bukkit.getPluginManager() instanceof SimplePluginManager) {
-                Field field = SimplePluginManager.class.getDeclaredField("commandMap");
-                field.setAccessible(true);
-
-                return (CommandMap) field.get(Bukkit.getPluginManager());
-            }
-        } catch(NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public CommandBase enableDelay(int delay) {
@@ -80,15 +63,15 @@ public abstract class CommandBase extends BukkitCommand implements CommandExecut
         this.delayedPlayers.remove(player.getName());
     }
 
-    public void sendUsage(CommandSender sender) {
-        sender.sendMessage(ChatColor.GRAY + getUsage());
+    public void sendSyntax(CommandSender sender) {
+        sender.sendMessage(ChatColor.GRAY + getSyntax());
     }
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         // Mismatched argument length
         if (args.length < minArguments || (args.length > maxArguments && maxArguments != -1)) {
-            sendUsage(sender);
+            sendSyntax(sender);
             return true;
         }
 
@@ -120,7 +103,7 @@ public abstract class CommandBase extends BukkitCommand implements CommandExecut
         }
 
         if (!onCommand(sender, args)) {
-            sendUsage(sender);
+            sendSyntax(sender);
         }
 
         return true;
@@ -134,5 +117,22 @@ public abstract class CommandBase extends BukkitCommand implements CommandExecut
 
     public abstract boolean onCommand(CommandSender sender, String[] args);
 
-    public abstract String getUsage();
+    public abstract String getSyntax();
+
+    public void error(CommandSender sender, String... errorMessages) {
+        if (errorMessages.length > 1) {
+            for (int i = 0; i < errorMessages.length-1; i++) // Last message is reserved for syntax
+                sender.sendMessage(ChatColor.RED + errorMessages[i]);
+            sender.sendMessage(ChatColor.GRAY + errorMessages[errorMessages.length-1]);
+        }
+        else
+            // no syntax
+            for (String errorMessage: errorMessages)
+                sender.sendMessage(ChatColor.RED + errorMessage);
+    }
+
+    public void reply(CommandSender sender, String... messages) {
+        for (String message: messages)
+            sender.sendMessage(ChatColor.GREEN + message);
+    }
 }

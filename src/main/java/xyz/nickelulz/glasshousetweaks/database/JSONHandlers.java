@@ -1,4 +1,4 @@
-package xyz.nickelulz.glasshousetweaks.util;
+package xyz.nickelulz.glasshousetweaks.database;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonToken;
@@ -105,6 +105,18 @@ public class JSONHandlers {
             Bounty bounty = (Bounty) src;
             json.addProperty("type", "bounty");
             return json;
+        }
+    }
+
+    public static class AttackJSON implements JsonSerializer<Hit>, JsonDeserializer<Hit> {
+        @Override
+        public Hit deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return null;
+        }
+
+        @Override
+        public JsonElement serialize(Hit src, Type typeOfSrc, JsonSerializationContext context) {
+            return null;
         }
     }
 }
