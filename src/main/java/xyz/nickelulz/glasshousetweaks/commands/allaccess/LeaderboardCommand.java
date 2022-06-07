@@ -18,7 +18,7 @@ public class LeaderboardCommand extends CommandBase {
     public boolean onCommand(CommandSender sender, String[] args) {
 
         if (GlasshouseTweaks.getPlayersDatabase().size() == 0) {
-            sender.sendMessage(ChatColor.GRAY + "Nobody is currently registered.");
+            reply(sender, "Nobody is currently registered.");
             return true;
         }
 
@@ -26,22 +26,33 @@ public class LeaderboardCommand extends CommandBase {
             case "kills": {
                 ArrayList<User> killsLeaderboard = new ArrayList<>(GlasshouseTweaks.getPlayersDatabase().getDataset());
                 sort(1, killsLeaderboard);
-                sender.sendMessage(ChatColor.GRAY + "===== KILLS =====");
+                reply(sender, "===== KILLS =====");
                 for (int i = 0; i < killsLeaderboard.size(); i++)
-                    sender.sendMessage(ChatColor.GRAY + " " + (i+1) + ": " + killsLeaderboard.get(i).getProfile().getName() +
+                    reply(sender, " " + (i+1) + ": " + killsLeaderboard.get(i).getProfile().getName() +
                             " - " + killsLeaderboard.get(i).getKills());
-                sender.sendMessage(ChatColor.GRAY + "=================");
+                reply(sender, "=================");
                 break;
             }
 
             case "deaths": {
                 ArrayList<User> deathsLeaderboard = new ArrayList<>(GlasshouseTweaks.getPlayersDatabase().getDataset());
                 sort(0, deathsLeaderboard);
-                sender.sendMessage(ChatColor.GRAY + "===== DEATHS =====");
+                reply(sender, "===== DEATHS =====");
                 for (int i = 0; i < deathsLeaderboard.size(); i++)
-                    sender.sendMessage(ChatColor.GRAY + "" + (i+1) + ": " + deathsLeaderboard.get(i).getProfile().getName() +
+                    reply(sender, "" + (i+1) + ": " + deathsLeaderboard.get(i).getProfile().getName() +
                             " - " + deathsLeaderboard.get(i).getDeaths());
-                sender.sendMessage(ChatColor.GRAY +  "==================");
+                reply(sender, "==================");
+                break;
+            }
+
+            case "morbiums": {
+                ArrayList<User> morbiumsLeaderboard = new ArrayList<>(GlasshouseTweaks.getPlayersDatabase().getDataset());
+                sort(2, morbiumsLeaderboard);
+                reply(sender, "===== MORBIUMS =====");
+                for (int i = 0; i < morbiumsLeaderboard.size(); i++)
+                    reply(sender, "" + (i+1) + ": " + morbiumsLeaderboard.get(i).getProfile().getName() +
+                            " - " + morbiumsLeaderboard.get(i).getMorbiums());
+                reply(sender, "==================");
                 break;
             }
 
@@ -60,13 +71,13 @@ public class LeaderboardCommand extends CommandBase {
      * modes:
      * 0 -> deaths
      * 1 -> kills
+     * 2 -> morbiums
      */
     private void sort(int mode, ArrayList<User> list) {
         for (int i = 0; i < list.size()-1; i++) {
             int smallestPos = 0;
             for (int j = i+1; j < list.size(); j++)
-                if (mode == 1 ? list.get(i).getKills() < list.get(j).getKills() :
-                        list.get(i).getDeaths() < list.get(j).getDeaths())
+                if (sortHieristic(mode, list.get(i), list.get(j)))
                     smallestPos = j;
             User temp = list.get(i);
             list.set(i, list.get(smallestPos));
@@ -74,8 +85,24 @@ public class LeaderboardCommand extends CommandBase {
         }
     }
 
+    private boolean sortHieristic(int mode, User a, User b) {
+        switch (mode) {
+            case 0: // deaths
+                return a.getDeaths() < b.getDeaths();
+
+            case 1: // kills
+                return a.getKills() < b.getKills();
+
+            case 2: // morbiums
+                return a.getMorbiums() < b.getMorbiums();
+
+            default:
+                return false;
+        }
+    }
+
     @Override
     public String getSyntax() {
-        return "/leaderboard <kills/deaths>";
+        return "/leaderboard <kills/deaths/morbiums>";
     }
 }

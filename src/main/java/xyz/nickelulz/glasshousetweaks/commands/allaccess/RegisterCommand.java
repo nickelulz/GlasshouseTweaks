@@ -13,26 +13,27 @@ import xyz.nickelulz.glasshousetweaks.datatypes.User;
  */
 public class RegisterCommand extends CommandBase {
     public RegisterCommand() {
-        super("register", 1, true);
+        super("register", true);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         if (GlasshouseTweaks.getPlayersDatabase().containsPlayer(player)) {
-            player.sendMessage(ChatColor.RED + "You are already registered!");
+            error(sender, "You are already registered!");
             return true;
         }
-        String discordId = args[0];
-        if (GlasshouseTweaks.getPlayersDatabase().add(new User(discordId, player)))
-            player.sendMessage(ChatColor.GREEN + "You are now registered as " + ChatColor.GRAY + discordId + ChatColor.GREEN + ".");
+        // using a placeholder
+        if (GlasshouseTweaks.getPlayersDatabase().add(new User("placeholder", player)))
+            success(sender, "You are now registered with the plugin and discord bot. You can now use commands to " +
+                    "place hits, and have hits placed on you.");
         else
-            player.sendMessage(ChatColor.RED + "Failed to register you! (Contact a server administrator..)");
+            error(sender, "Failed to register you! (Contact a server administrator..)");
         return true;
     }
 
     @Override
     public String getSyntax() {
-        return "/register <discordId>";
+        return "/register";
     }
 }

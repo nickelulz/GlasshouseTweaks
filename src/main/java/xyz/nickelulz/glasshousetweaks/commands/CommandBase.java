@@ -119,20 +119,21 @@ public abstract class CommandBase extends BukkitCommand implements CommandExecut
 
     public abstract String getSyntax();
 
-    public void error(CommandSender sender, String... errorMessages) {
-        if (errorMessages.length > 1) {
-            for (int i = 0; i < errorMessages.length-1; i++) // Last message is reserved for syntax
-                sender.sendMessage(ChatColor.RED + errorMessages[i]);
-            sender.sendMessage(ChatColor.GRAY + errorMessages[errorMessages.length-1]);
-        }
-        else
-            // no syntax
-            for (String errorMessage: errorMessages)
-                sender.sendMessage(ChatColor.RED + errorMessage);
+    public void error(CommandSender sender, String err, String syntax) {
+        sender.sendMessage(ChatColor.RED + err);
+        sender.sendMessage(ChatColor.GRAY + syntax);
+    }
+
+    public void error(CommandSender sender, String err) {
+        sender.sendMessage(ChatColor.RED + err);
     }
 
     public void reply(CommandSender sender, String... messages) {
         for (String message: messages)
-            sender.sendMessage(ChatColor.GREEN + message);
+            sender.sendMessage(ChatColor.GRAY + message);
+    }
+
+    public void success(CommandSender sender, String message) {
+        sender.sendMessage(ChatColor.GREEN + message);
     }
 }

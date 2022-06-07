@@ -99,14 +99,13 @@ public class HitDatabase {
         return false;
     }
 
-    public boolean claim(User claimer, Hit hit) {
-        boolean success = remove(hit);
-        if (success) {
-            claimer.setKills(claimer.getKills()+1);
-            hit.getTarget().setDeaths(hit.getTarget().getDeaths()+1);
-            success = completedHitsDatabase.add(hit);
-        }
-        return success;
+    public boolean claim(Hit hit) {
+        hit.getPlacer().increment("morbiums", 1);
+        return remove(hit) && completedHitsDatabase.add(hit);
+    }
+
+    public boolean save() {
+        return activeHitsDatabase.save() && completedHitsDatabase.save();
     }
 
     public ArrayList<Contract> getContracts(User contractor) {
@@ -124,12 +123,12 @@ public class HitDatabase {
 
 class ActiveHitsDatabase extends Database<Hit> {
     public ActiveHitsDatabase() {
-        super("hits.json", Hit.class, Hit[].class, new JSONHandlers.HitJSON());
+        super("hits.json", Hit.class, Hit[].class, new JSONHandlers.HitJSON(), true);
     }
 }
 
 class CompletedHitsDatabase extends Database<Hit> {
     public CompletedHitsDatabase() {
-        super("completed_hits.json", Hit.class, Hit[].class, new JSONHandlers.HitJSON());
+        super("completed_hits.json", Hit.class, Hit[].class, new JSONHandlers.HitJSON(), true);
     }
 }

@@ -1,9 +1,10 @@
 package xyz.nickelulz.glasshousetweaks.datatypes;
 
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
-import xyz.nickelulz.glasshousetweaks.databases.PlayerDatabase;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
@@ -15,35 +16,23 @@ import java.time.temporal.ChronoUnit;
  */
 public class User {
     private String discordId;
-    private Player profile;
+    private OfflinePlayer profile;
     private LocalDateTime lastPlacedHit, lastTargetedHit, lastContractedHit;
-    private int kills, deaths;
+    private int kills, deaths, morbiums; // morbiums are just tokens users get for placing successful hits
 
-    /**
-     * Fresh user constructor
-     * @param discordId
-     * @param profile
-     */
-    public User(String discordId, Player profile) {
-        this(discordId, profile, null, null, null, 0, 0);
+     // Fresh user constructor
+    public User(String discordId, OfflinePlayer profile) {
+        this(discordId, profile, null, null, null, 0, 0, 0);
     }
 
-    public User(String discordId, Player profile, int kills, int deaths) {
-        this(discordId, profile, null, null, null, kills, deaths);
+    public User(String discordId, OfflinePlayer profile, int kills, int deaths, int morbiums) {
+        this(discordId, profile, null, null, null, kills, deaths, morbiums);
     }
 
-    /**
-     * Full constructor
-     * @param discordId
-     * @param profile
-     * @param lastContractedHit
-     * @param lastTargetedHit
-     * @param lastPlacedHit
-     * @param kills
-     * @param deaths
-     */
-    public User(String discordId, Player profile, @Nullable LocalDateTime lastContractedHit,
-                @Nullable LocalDateTime lastTargetedHit, @Nullable LocalDateTime lastPlacedHit, int kills, int deaths) {
+    //Full constructor
+    public User(String discordId, OfflinePlayer profile, @Nullable LocalDateTime lastContractedHit,
+                @Nullable LocalDateTime lastTargetedHit, @Nullable LocalDateTime lastPlacedHit,
+                int kills, int deaths, int morbiums) {
         this.discordId = discordId;
         this.profile = profile;
         this.lastContractedHit = lastContractedHit;
@@ -51,6 +40,7 @@ public class User {
         this.lastPlacedHit = lastPlacedHit;
         this.kills = kills;
         this.deaths = deaths;
+        this.morbiums = morbiums;
     }
 
     /**
@@ -74,7 +64,7 @@ public class User {
             return 0;
         else {
             int cooldown_raw = ConfigurationConstants.HIRING_COOLDOWN - minutesSinceDate(lastPlacedHit);
-            int cooldown = Math.signum(cooldown_raw) == 1.0f ? cooldown_raw : 0;
+            int cooldown = Math.max(cooldown_raw, 0);
             if (cooldown == 0) {
                 lastPlacedHit = null;
                 GlasshouseTweaks.getPlayersDatabase().save();
@@ -102,7 +92,7 @@ public class User {
             return 0;
         else {
             int cooldown_raw = ConfigurationConstants.TARGETING_COOLDOWN - minutesSinceDate(lastTargetedHit);
-            int cooldown = Math.signum(cooldown_raw) == 1.0f ? cooldown_raw : 0;
+            int cooldown = Math.max(cooldown_raw, 0);
             if (cooldown == 0) {
                 lastTargetedHit = null;
                 GlasshouseTweaks.getPlayersDatabase().save();
@@ -121,6 +111,18 @@ public class User {
     }
 
     /**
+     * DM's the user on both the server (if they are online) and discord.
+     * @return Operation Success Code
+     */
+    public void directMessage(String message) {
+        Player ingame = profile.getPlayer();
+        if (ingame != null) {
+            ingame.sendMessage(ChatColor.ITALIC + "" + ChatColor.GRAY + message);
+        }
+        // discord dm
+    }
+
+    /**
      * Calculates the amount of contracting
      * cooldown time left for this player.
      *
@@ -131,7 +133,7 @@ public class User {
             return 0;
         else {
             int cooldown_raw = ConfigurationConstants.CONTRACTING_COOLDOWN - minutesSinceDate(lastContractedHit);
-            int cooldown = Math.signum(cooldown_raw) == 1.0f ? cooldown_raw : 0;
+            int cooldown = Math.max(cooldown_raw, 0);
             if (cooldown == 0) {
                 lastContractedHit = null;
                 GlasshouseTweaks.getPlayersDatabase().save();
@@ -179,7 +181,7 @@ public class User {
     public void setDiscordId(String discordId) {
         this.discordId = discordId;
     }
-    public Player getProfile() {
+    public OfflinePlayer getProfile() {
         return profile;
     }
     public void setProfile(Player profile) {
@@ -214,5 +216,27 @@ public class User {
     }
     public void setDeaths(int deaths) {
         this.deaths = deaths;
+    }
+
+    public int getMorbiums() {
+        return morbiums;
+    }
+
+    public void setMorbiums(int morbiums) {
+        this.morbiums = morbiums;
+    }
+
+    public void increment(String variable, int change) {
+        switch (variable) {
+            case "kills":
+                kills += change;
+                break;
+            case "morbiums":
+                morbiums += change;
+                break;
+            case "deaths":
+                deaths += change;
+                break;
+        }
     }
 }

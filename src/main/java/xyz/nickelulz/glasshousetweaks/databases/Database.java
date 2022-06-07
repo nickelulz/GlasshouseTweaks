@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,15 +15,18 @@ import java.util.logging.Level;
 
 public abstract class Database<T> {
     private ArrayList<T> dataset;
-    private File database;
-    private Gson jsonParser;
-    private Type jsonTypeFrom;
+    private final File database;
+    private final Gson jsonParser;
+    private final Type jsonTypeFrom;
 
-    public Database(String filename, Type jsonTypeTo, Type jsonTypeFrom, Object typeAdapter) {
+    public Database(String filename, Class<T> jsonTypeTo, Type jsonTypeFrom, Object typeAdapter, boolean inheritanceMode) {
         this.dataset = new ArrayList<>();
-        this.database = new File(GlasshouseTweaks.getInstance().getDataFolder().getAbsolutePath() +
-                "/" + filename);
-        this.jsonParser = new GsonBuilder().registerTypeAdapter(jsonTypeTo, typeAdapter).setPrettyPrinting().create();
+        this.database = new File(GlasshouseTweaks.getInstance().getDataFolder().getAbsolutePath() + "/" + filename);
+        // test?
+//        if (inheritanceMode)
+//            this.jsonParser = new GsonBuilder().registerTypeHierarchyAdapter(jsonTypeTo, typeAdapter).setPrettyPrinting().create();
+//        else
+            this.jsonParser = new GsonBuilder().registerTypeAdapter(jsonTypeTo, typeAdapter).setPrettyPrinting().create();
         this.jsonTypeFrom = jsonTypeFrom;
 
         try {
@@ -34,6 +36,9 @@ public abstract class Database<T> {
         }
 
         reload();
+
+        for (T data: dataset)
+            System.out.println(data);
     }
 
     public void ensureExists() throws IOException {
@@ -47,18 +52,15 @@ public abstract class Database<T> {
         try {
             ensureExists();
             FileReader in = new FileReader(database);
-            T[] list = jsonParser.fromJson(in, jsonTypeFrom);
-            if (list == null) {
-                GlasshouseTweaks.log(Level.SEVERE, "Could not parse database " +
-                        database.getName() + ". List is NULL.");
-                return false;
-            }
-            dataset = new ArrayList<>(Arrays.asList(list));
+            dataset = new ArrayList<>(Arrays.asList(jsonParser.fromJson(in, jsonTypeFrom)));
             GlasshouseTweaks.log(Level.INFO, "Loaded database " + database.getName() + ".");
             return true;
-        } catch (IOException | NullPointerException | InaccessibleObjectException e) {
+        } catch (Exception e) {
             GlasshouseTweaks.log(Level.SEVERE, "Could not load database " + database.getName() +
                     " due to " + e.getClass().getName());
+            if (!(e instanceof IOException || e instanceof NullPointerException))
+                e.printStackTrace();
+            dataset = new ArrayList<>();
         }
         return false;
     }
@@ -72,11 +74,13 @@ public abstract class Database<T> {
             out.close();
             GlasshouseTweaks.log(Level.INFO, "Saved database " + database.getName() + ".");
             return true;
-        } catch (IOException | NullPointerException | InaccessibleObjectException e) {
+        } catch (Exception e) {
             GlasshouseTweaks.log(Level.SEVERE, "Could not save database " + database.getName() +
                     " due to " + e.getClass().getName());
+            if (!(e instanceof IOException || e instanceof NullPointerException))
+                e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
 

@@ -17,6 +17,47 @@ targeting-cooldown: 240
 # Default: 10 diamonds.
 minimum-hit-price: 10
 
+# The maximum price that a hit can be in diamonds.
+# Default: 64 diamonds.
+maximum-hit-price: 128
+
 # The day of the week to be "anarchy day".
 # Leave commented to disable.
+# Default: Saturday
 anarchy-day: "saturday"
+
+# The message that is DM'd to a user upon
+# A new hit being placed on them
+target-warning: "A new hit has been placed on you! Watch out!"
+
+error-messages:
+
+  # Permission Errors
+  - user-not-registered: "The command requires you to be registered."
+  - user-not-admin: "This command requires you to be an admin."
+
+  # Not Found Errors
+  - contractor-not-found: "The contractor you selected was not found in the registry. Either they are not a registered user, or you misspelled their name."
+  - target-not-found: "The target you have selected was not found in the registry. Either they are not a registered user, or you spelled their name incorrectly."
+  - hirer-not-found: "The hirer you have selected was not found in the registry. Either they are not a registered user, or you spelled their name incorrectly."
+  - player-not-found: "The player you have selected was not found. Perhaps you have misspelled their name."
+
+  # Price Errors
+  - invalid-amount: "The amount has to be an integer."
+  - price-too-low: "That price is too low!"
+  - price-too-high: "That price is too high!"
+
+  # Busy Errors
+  - target-is-busy: "Your target already has an active hit out on them."
+  - user-busy: "You already have an active hit! You cannot have more than one of them at once."
+  - too-many-hits: "You already have another hit placed on someone! Either wait until that hit is completed, or remove that hit."
+
+  # Cooldown Errors
+  - contractor-under-cooldown: "Your contractor is currently under a cooldown."
+  - hirer-under-cooldown: "You are currently under a hiring cooldown."
+  - target-under-cooldown: "The target you selected is currently under a cooldown."
+
+  # Placement Mismatch Errors
+  - hirer-is-target: "You cannot place a hit on yourself."
+  - contractor-is-target: "The contractor cannot be the target."
+  - hirer-is-contractor: "You cannot be the contractor."

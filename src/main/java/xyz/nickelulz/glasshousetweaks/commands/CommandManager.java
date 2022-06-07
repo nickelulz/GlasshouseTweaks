@@ -13,6 +13,7 @@ import xyz.nickelulz.glasshousetweaks.commands.allaccess.ViewPlayerInfoCommand;
 import xyz.nickelulz.glasshousetweaks.commands.registeredonly.BountyCommand;
 import xyz.nickelulz.glasshousetweaks.commands.registeredonly.ContractCommand;
 import xyz.nickelulz.glasshousetweaks.commands.registeredonly.RemoveHitCommand;
+import xyz.nickelulz.glasshousetweaks.commands.registeredonly.TransferMorbiumsCommand;
 
 import java.lang.reflect.Field;
 import java.util.logging.Level;
@@ -51,6 +52,7 @@ public class CommandManager {
         registerCommand("bounty", new BountyCommand());
         registerCommand("contract", new ContractCommand());
         registerCommand("removehit", new RemoveHitCommand());
+        registerCommand("transfer", new TransferMorbiumsCommand());
 
         // Admin Only
         registerCommand("illegalkills", new ManageIllegalKillsCommand());

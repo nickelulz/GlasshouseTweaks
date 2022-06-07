@@ -30,7 +30,6 @@ public class Contract extends Hit {
      * @param claimer The player that claimed this contract
      * @param timeClaimed When this contract was claimed
      * @param contractor The contractor of this contract
-     * @param pending Whether this hit has been accepted yet
      */
     public Contract(User placer, User target, int price, LocalDateTime timePlaced, User claimer, LocalDateTime timeClaimed, User contractor) {
         super(placer, target, price, timePlaced, claimer, timeClaimed);

@@ -27,7 +27,7 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
     private static GlasshouseTweaks instance;
     private static PlayerDatabase players;
     private static HitDatabase hits;
-    private static IllegalKillsDatabase illegalkills;
+    private static IllegalKillsDatabase illegalKills;
 
     @Override
     public void onEnable() {
@@ -44,24 +44,15 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
         // Load databases
         players = new PlayerDatabase();
         hits = new HitDatabase();
-        illegalkills = new IllegalKillsDatabase();
+        illegalKills = new IllegalKillsDatabase();
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
-        log(Level.INFO, "Player " + player.getName() + " has joined.");
-        if (!player.hasPlayedBefore()) {
-            player.sendMessage(ChatColor.GRAY + "Hello " + event.getPlayer().getName() + ", make sure to " + ChatColor.DARK_GREEN +
-                    "read the rules " + ChatColor.GRAY + "and " + ChatColor.DARK_GREEN + "register with the discord bot " +
-                    ChatColor.GRAY + " (if you haven't already done so) before playing.");
-            broadcast(ChatColor.GRAY + player.getName() + " has joined the server for the first time! " +
-                    "DO NOT place hits or attack them for their first day on the server, as that is their grace " +
-                    "period!");
-        }
-        else if (!players.isRegistered(player)) {
-            player.sendMessage(ChatColor.AQUA + "You are not registered. Make sure to register using " + ChatColor.DARK_GREEN + "/register" + ChatColor.AQUA + ".");
-        }
+        log(Level.INFO, player.getName() + " has joined.");
+        if (!players.isRegistered(player))
+            player.sendMessage(ChatColor.GRAY + "You are not registered. Make sure to register using " + ChatColor.DARK_GREEN + "/register" + ChatColor.GRAY + ".");
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -71,18 +62,21 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
         // Killer is a player.
         if (victim.getKiller() != null) {
             Player killer = victim.getKiller();
+            User victimUser = null, killerUser = null;
             boolean illegal = true;
+            boolean registered = false;
 
             // Affirms that victim and killer are both registered players
             if (players.isRegistered(victim) && players.isRegistered(killer)) {
-                User victimUser = players.findByProfile(victim);
-                User killerUser = players.findByProfile(killer);
+                victimUser = players.findByProfile(victim);
+                killerUser = players.findByProfile(killer);
                 if (victimUser != null && killerUser != null) {
+                    registered = true;
 
                     // Initial check: the killer is countering a contract placed on them.
                     Contract victimActiveContract = hits.findContract(killerUser, victimUser);
                     if (victimActiveContract != null) {
-                        hits.claim(killerUser, victimActiveContract);
+                        hits.claim(victimActiveContract);
                         illegal = false;
                     }
 
@@ -102,7 +96,7 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                              */
                             Contract killerActiveContract = hits.findContract(victimUser, killerUser);
                             if (killerActiveContract != null) {
-                                hits.claim(killerUser, killerActiveContract);
+                                hits.claim(killerActiveContract);
                                 illegal = false;
                             }
 
@@ -113,7 +107,7 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                                  */
                                 Bounty activeBounty = hits.findBountyByTarget(victimUser);
                                 if (activeBounty != null) {
-                                    hits.claim(killerUser, activeBounty);
+                                    hits.claim(activeBounty);
                                     illegal = false;
                                 }
 
@@ -122,6 +116,14 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                         }
 
                     }
+                }
+                else {
+                    if (!players.isRegistered(killer))
+                        killer.sendMessage(ChatColor.YELLOW + "Make sure to register, or the server owner will " +
+                                "literally eat you.");
+                    if (!players.isRegistered(victim))
+                        victim.sendMessage(ChatColor.YELLOW + "Make sure to register, or the server owner will " +
+                                "literally eat you.");
                 }
             }
 
@@ -136,10 +138,21 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
              * illegal kills database.
              */
             if (illegal) {
-                event.setDeathMessage(String.format(ChatColor.RED + "%s illegally killed %s! You are not " +
-                                "allowed to kill without a hit " + ChatColor.GREEN + " unless it is a saturday. ",
-                        killer.getName(), victim.getName()));
-                illegalkills.add(new Attack(killer, victim, LocalDateTime.now()));
+                if (ConfigurationConstants.ANARCHY_DAY == null)
+                    broadcast(String.format(ChatColor.RED + "%s illegally killed %s! (You are not " + "allowed to kill without a hit.)",
+                            killer.getName(), victim.getName()));
+                else
+                    broadcast(String.format(ChatColor.RED + "%s illegally killed %s! (You are not allowed to kill " +
+                            "without a hit " + ChatColor.GREEN + "unless it is a saturday" + ChatColor.RED + ".)",
+                            killer.getName(), victim.getName()));
+                illegalKills.add(new Attack(killer, victim, LocalDateTime.now()));
+            }
+            else {
+                // legal
+                if (registered) {
+                    victimUser.increment("deaths", 1);
+                    killerUser.increment("kills", 1);
+                }
             }
         }
     }
@@ -149,6 +162,8 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
         // Plugin shutdown logic
         log(Level.INFO, "Plugin stopped.");
         players.save();
+        hits.save();
+        illegalKills.save();
     }
 
     public static GlasshouseTweaks getInstance() {
@@ -174,6 +189,6 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
     }
 
     public static IllegalKillsDatabase getIllegalkillDatabase() {
-        return illegalkills;
+        return illegalKills;
     }
 }

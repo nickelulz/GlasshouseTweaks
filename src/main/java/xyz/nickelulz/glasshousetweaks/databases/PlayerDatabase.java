@@ -1,12 +1,12 @@
 package xyz.nickelulz.glasshousetweaks.databases;
 
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
 
 public final class PlayerDatabase extends Database<User> {
 
     public PlayerDatabase() {
-        super("players.json", User.class, User[].class, new JSONHandlers.UserJSON());
+        super("players.json", User.class, User[].class, new JSONHandlers.UserJSON(), false);
     }
 
     public User findById(String discordId) {
@@ -18,23 +18,23 @@ public final class PlayerDatabase extends Database<User> {
 
     public User findByIGN(String ign) {
         for (User u: getDataset())
-            if (u.getProfile().getDisplayName().equalsIgnoreCase(ign))
+            if (u.getProfile().getName().equalsIgnoreCase(ign))
                 return u;
         return null;
     }
 
-    public User findByProfile(Player profile) {
+    public User findByProfile(OfflinePlayer profile) {
         for (User u: getDataset())
             if (u.getProfile().equals(profile))
                 return u;
         return null;
     }
 
-    public boolean isRegistered(Player profile) {
+    public boolean isRegistered(OfflinePlayer profile) {
         return !(findByProfile(profile) == null);
     }
 
-    public boolean containsPlayer(Player p) {
+    public boolean containsPlayer(OfflinePlayer p) {
         for (User u: getDataset())
             if (u.getProfile().equals(p))
                 return true;

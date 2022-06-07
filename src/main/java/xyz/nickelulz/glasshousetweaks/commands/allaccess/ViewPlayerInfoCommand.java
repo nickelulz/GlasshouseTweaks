@@ -22,11 +22,12 @@ public class ViewPlayerInfoCommand extends CommandBase {
             return true;
         }
 
-        reply(sender, "Username: " + player.getProfile().getName());
+        reply(sender, "============================================");
+        reply(sender, "Username: " + ChatColor.GREEN + player.getProfile().getName());
         // for future: add get discord name
-        reply(sender, "Discord ID: " + player.getProfile().getName());
-        reply(sender, "Kills: " + player.getKills());
-        reply(sender, "Deaths: " + player.getDeaths() + ".");
+        reply(sender, "Discord ID: " + ChatColor.GREEN + player.getProfile().getName());
+        reply(sender, "Kills: " + ChatColor.GREEN + player.getKills());
+        reply(sender, "Deaths: " + ChatColor.GREEN + player.getDeaths() + ".");
         String contractorStatus = "Contractor Status: ",
                 targetingStatus = "Targetting Status: ",
                 hiringStatus = "Hit Hiring Status: ";
@@ -49,14 +50,27 @@ public class ViewPlayerInfoCommand extends CommandBase {
 
         reply(sender, targetingStatus);
 
-        if (GlasshouseTweaks.getHitsDatabase().isContractor(player))
-            hiringStatus += ChatColor.RED + "Has a placed hit.";
-        else if (player.hiringCooldown() > 0)
-            hiringStatus += ChatColor.DARK_GRAY + player.hiringCooldownString() + ".";
-        else
-            hiringStatus += ChatColor.GREEN + "Ready to place a hit.";
+        if (sender.equals(player.getProfile())) {
+            if (GlasshouseTweaks.getHitsDatabase().isContractor(player))
+                hiringStatus += ChatColor.RED + "Has a placed hit.";
+            else if (player.hiringCooldown() > 0)
+                hiringStatus += ChatColor.DARK_GRAY + player.hiringCooldownString() + ".";
+            else
+                hiringStatus += ChatColor.GREEN + "Ready to place a hit.";
 
-        reply(sender, hiringStatus);
+            reply(sender, hiringStatus);
+            reply(sender, ChatColor.YELLOW + "Your current hits:");
+
+            if (GlasshouseTweaks.getHitsDatabase().isActivePlacer(player))
+                reply(sender, "You placed: " + GlasshouseTweaks.getHitsDatabase().findHitByPlacer(player).toSimpleString());
+            else
+                reply(sender, "You have no placed hits currently.");
+
+            if (GlasshouseTweaks.getHitsDatabase().isContractor(player))
+                reply(sender, "You are the contractor for: " + GlasshouseTweaks.getHitsDatabase().findActiveContract(player).toSimpleString());
+            else
+                reply(sender, "You are not the contractor for any hits currently.");
+        }
         return true;
     }
 

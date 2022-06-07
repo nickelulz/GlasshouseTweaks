@@ -6,17 +6,7 @@ import xyz.nickelulz.glasshousetweaks.datatypes.User;
 public class IllegalKillsDatabase extends Database<Attack> {
 
     public IllegalKillsDatabase() {
-        super("illegalkills.json", Attack.class, Attack[].class, new JSONHandlers.AttackJSON());
-    }
-
-    @Override
-    public boolean reload() {
-        return false;
-    }
-
-    @Override
-    public boolean save() {
-        return false;
+        super("illegalkills.json", Attack.class, Attack[].class, new JSONHandlers.AttackJSON(), true);
     }
 
     public Attack find(User attacker, User victim) {

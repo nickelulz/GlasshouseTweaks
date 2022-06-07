@@ -29,67 +29,6 @@ public class ContractCommand extends CommandBase {
         }
 
         switch (mode) {
-            case "place":
-            {
-                if (args.length != 4) {
-                    sendSpecializedSyntax(sender, mode);
-                    return true;
-                }
-
-                User target = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
-                User contractor = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[3]);
-                int price;
-
-                if (target == null) {
-                    error(sender, ConfigurationConstants.TARGET_NOT_FOUND, getSpecializedSyntax(mode));
-                    return true;
-                }
-
-                try {
-                    price = Integer.parseInt(args[2]);
-                } catch (NumberFormatException e) {
-                    error(sender, ConfigurationConstants.INVALID_PRICE, getSpecializedSyntax(mode));
-                    return true;
-                }
-
-                if (price < ConfigurationConstants.MINIMUM_HIT_PRICE) {
-                    error(sender, ConfigurationConstants.PRICE_TOO_LOW);
-                    return true;
-                }
-
-                if (contractor == null) {
-                    error(sender, ConfigurationConstants.CONTRACTOR_NOT_FOUND, getSpecializedSyntax(mode));
-                    return true;
-                }
-
-                if (GlasshouseTweaks.getHitsDatabase().isPlacer(user)) {
-                    error(sender, ConfigurationConstants.TOO_MANY_HITS);
-                    return true;
-                }
-
-                if (GlasshouseTweaks.getHitsDatabase().isTarget(target)) {
-                    error(sender, ConfigurationConstants.TARGET_IS_BUSY);
-                    return true;
-                }
-
-                if (user.hiringCooldown() > 0) {
-                    error(sender, ConfigurationConstants.HIRER_UNDER_COOLDOWN);
-                    reply(sender, "Cooldown time left: " + user.hiringCooldownString());
-                    return true;
-                }
-
-                if (target.targettingCooldown() > 0) {
-                    error(sender, ConfigurationConstants.TARGET_UNDER_COOLDOWN);
-                    reply(sender, "Target cooldown time left: " + target.targettingCooldownString());
-                    return true;
-                }
-
-                GlasshouseTweaks.getHitsDatabase().add(new Contract(user, target, price, LocalDateTime.now(), contractor, true));
-                reply(sender, String.format("Placed new contract on %s with %s as the contractor for %d diamonds.",
-                        target.getProfile().getName(), contractor.getProfile().getName(), price));
-                return true;
-            }
-
             case "accept":
             case "deny":
             {
@@ -122,10 +61,35 @@ public class ContractCommand extends CommandBase {
                 switch (mode) {
                     case "accept":
                     {
+                        if (GlasshouseTweaks.getHitsDatabase().isContractor(user)) {
+                            reply(sender, ConfigurationConstants.USER_BUSY);
+                            return true;
+                        }
+
+                        if (user.contractingCooldown() > 0) {
+                            reply(sender, "You are still under cooldown! " + user.contractingCooldownString());
+                            return true;
+                        }
+
+                        if (GlasshouseTweaks.getHitsDatabase().isTarget(target)) {
+                            error(sender, ConfigurationConstants.TARGET_IS_BUSY);
+                            return true;
+                        }
+
+                        if (target.targettingCooldown() > 0) {
+                            error(sender, ConfigurationConstants.TARGET_UNDER_COOLDOWN);
+                            reply(sender, "Target cooldown time left: " + target.targettingCooldownString());
+                            return true;
+                        }
+
                         contract.setPending(false);
                         // DM placer
-                        reply(sender, "Accepted contract from " + contract.getPlacer().getProfile().getName() + " for" +
+                        success(sender, "Accepted contract from " + contract.getPlacer().getProfile().getName() + " " +
+                                "for" +
                                 " " + contract.getPrice() + " diamonds.");
+                        hirer.directMessage("Your contract kill offer to " + user.getProfile().getName() + " on " +
+                                target.getProfile().getName() + " for " + contract.getPrice() + " diamonds was " +
+                                "accepted.");
                         return true;
                     }
 
@@ -133,13 +97,88 @@ public class ContractCommand extends CommandBase {
                     {
                         GlasshouseTweaks.getHitsDatabase().remove(contract);
                         // DM placer
-                        reply(sender, "Denied contract from " + contract.getPlacer().getProfile().getName() + " on " +
+                        success(sender, "Denied contract from " + contract.getPlacer().getProfile().getName() + " on " +
                                 contract.getTarget().getProfile().getName() + "for " + contract.getPrice() + " diamonds.");
+                        hirer.directMessage("Your contract kill offer to " + user.getProfile().getName() + " on " +
+                                target.getProfile().getName() + " for " + contract.getPrice() + " diamonds was " +
+                                "denied.");
                         return true;
                     }
                 }
 
-                break;
+                return true;
+            }
+
+            case "place":
+            {
+                if (args.length != 4) {
+                    sendSpecializedSyntax(sender, mode);
+                    return true;
+                }
+
+                User target = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
+                User contractor = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[3]);
+                int price;
+
+                if (target == null) {
+                    error(sender, ConfigurationConstants.TARGET_NOT_FOUND, getSpecializedSyntax(mode));
+                    return true;
+                }
+
+                try {
+                    price = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    error(sender, ConfigurationConstants.INVALID_AMOUNT, getSpecializedSyntax(mode));
+                    return true;
+                }
+
+                if (price < ConfigurationConstants.MINIMUM_HIT_PRICE) {
+                    error(sender, ConfigurationConstants.PRICE_TOO_LOW);
+                    return true;
+                }
+
+                if (price > ConfigurationConstants.MAXIMUM_HIT_PRICE) {
+                    error(sender, ConfigurationConstants.PRICE_TOO_HIGH);
+                    return true;
+                }
+
+                if (contractor == null) {
+                    error(sender, ConfigurationConstants.CONTRACTOR_NOT_FOUND, getSpecializedSyntax(mode));
+                    return true;
+                }
+
+                if (target.equals(user)) {
+                    error(sender, ConfigurationConstants.HIRER_IS_TARGET);
+                    return true;
+                }
+
+                if (user.equals(contractor)) {
+                    error(sender, ConfigurationConstants.HIRER_IS_CONTRACTOR);
+                    return true;
+                }
+
+                if (target.equals(contractor)) {
+                    error(sender, ConfigurationConstants.CONTRACTOR_IS_TARGET);
+                    return true;
+                }
+
+                if (GlasshouseTweaks.getHitsDatabase().isPlacer(user)) {
+                    error(sender, ConfigurationConstants.TOO_MANY_HITS);
+                    return true;
+                }
+
+
+                if (user.hiringCooldown() > 0) {
+                    error(sender, ConfigurationConstants.HIRER_UNDER_COOLDOWN);
+                    reply(sender, "Cooldown time left: " + user.hiringCooldownString());
+                    return true;
+                }
+
+                GlasshouseTweaks.getHitsDatabase().add(new Contract(user, target, price, LocalDateTime.now(), contractor, true));
+                success(sender, String.format("Placed new contract on %s with %s as the contractor for %d diamonds.",
+                        target.getProfile().getName(), contractor.getProfile().getName(), price));
+                target.directMessage(ConfigurationConstants.TARGET_WARNING);
+                return true;
             }
 
             case "view":
@@ -153,10 +192,9 @@ public class ContractCommand extends CommandBase {
                 Contract active = null;
 
                 for (Contract c: userContracts)
-                    if (!c.isPending()) {
-                        userContracts.remove(c);
+                    if (!c.isPending())
                         active = c;
-                    }
+                userContracts.remove(active);
 
                 reply(sender, "===== CONTRACTS: =====");
 
@@ -175,7 +213,7 @@ public class ContractCommand extends CommandBase {
                         reply(sender, (i+1) + ": " + userContracts.get(i).toSimpleString() + ".");
                 }
 
-                reply(sender, "======================");
+                reply(sender, "=====================");
 
                 break;
             }

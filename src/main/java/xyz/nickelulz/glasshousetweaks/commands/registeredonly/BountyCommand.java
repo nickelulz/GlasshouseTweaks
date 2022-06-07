@@ -46,7 +46,7 @@ public class BountyCommand extends CommandBase {
                 try {
                     price = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
-                    error(sender, ConfigurationConstants.INVALID_PRICE, getSpecializedSyntax(mode));
+                    error(sender, ConfigurationConstants.INVALID_AMOUNT, getSpecializedSyntax(mode));
                     return true;
                 }
 
@@ -55,13 +55,23 @@ public class BountyCommand extends CommandBase {
                     return true;
                 }
 
-                if (GlasshouseTweaks.getHitsDatabase().isTarget(target)) {
-                    error(sender, ConfigurationConstants.TARGET_IS_BUSY);
+                if (price > ConfigurationConstants.MAXIMUM_HIT_PRICE) {
+                    error(sender, ConfigurationConstants.PRICE_TOO_HIGH);
                     return true;
                 }
 
                 if (GlasshouseTweaks.getHitsDatabase().isActivePlacer(user)) {
-                    error(sender, ConfigurationConstants.HIRER_BUSY);
+                    error(sender, ConfigurationConstants.TOO_MANY_HITS);
+                    return true;
+                }
+
+                if (user.equals(target)) {
+                    error(sender, ConfigurationConstants.HIRER_IS_TARGET);
+                    return true;
+                }
+
+                if (GlasshouseTweaks.getHitsDatabase().isTarget(target)) {
+                    error(sender, ConfigurationConstants.TARGET_IS_BUSY);
                     return true;
                 }
 
@@ -82,8 +92,9 @@ public class BountyCommand extends CommandBase {
                     return true;
                 }
 
-                reply(sender, "Successfully placed new bounty on " + target.getProfile().getName() +
-                        " for " + price + "diamonds.");
+                success(sender, "Successfully placed new bounty on " + target.getProfile().getName() +
+                        " for " + price + " diamonds.");
+                target.directMessage(ConfigurationConstants.TARGET_WARNING);
                 return true;
             }
 

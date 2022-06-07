@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.commands.CommandBase;
+import xyz.nickelulz.glasshousetweaks.datatypes.Contract;
 import xyz.nickelulz.glasshousetweaks.datatypes.Hit;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
@@ -39,8 +40,15 @@ public class RemoveHitCommand extends CommandBase {
             return true;
         }
 
-        if (GlasshouseTweaks.getHitsDatabase().remove(hit))
-            error(sender,"Successfully removed hit against target " + target.getProfile().getName());
+        if (GlasshouseTweaks.getHitsDatabase().remove(hit)) {
+            success(sender, "Successfully removed hit against target " + target.getProfile().getName());
+            if (hit instanceof Contract) {
+                ((Contract) hit).getContractor().directMessage("A hit you were a contractor for (placed by " +
+                        user.getProfile().getName() + " on " + target.getProfile().getName() + ") was removed by the " +
+                        "placer.");
+            }
+            target.directMessage("A hit placed on you has been lifted.");
+        }
         return true;
     }
 

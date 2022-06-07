@@ -5,68 +5,38 @@ import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import java.time.format.DateTimeFormatter;
 
 public class ConfigurationConstants {
-    /**
-     * The minimum price required to place a hit on someone in diamonds.
-     *
-     * Default is 10 diamonds.
-     */
     public static final int MINIMUM_HIT_PRICE = GlasshouseTweaks.getInstance().getConfig().getInt("minimum-hit-price");
-
-    /**
-     * The amount of cooldown time for buffering between hiring each hit
-     * in minutes.
-     *
-     * Default is 2 hours.
-     */
+    public static final int MAXIMUM_HIT_PRICE = GlasshouseTweaks.getInstance().getConfig().getInt("maximum-hit-price");
     public static final int HIRING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("hiring-cooldown");
-
-    /**
-     * The amount of cooldown time for buffering between contracting for
-     * each hit in minutes.
-     *
-     * Default is 2 hours.
-     */
-    public static final int CONTRACTING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("contracting" +
-            "-cooldown");
-
-    /**
-     * The amount of cooldown time for buffering between being targetted on
-     * each hit in minutes.
-     *
-     * Default is 4 hours.
-     */
+    public static final int CONTRACTING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("contracting-cooldown");
     public static final int TARGETING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("targeting-cooldown");
-
-    /**
-     * The day designated as "anarchy day"
-     */
+    public static final String TARGET_WARNING = GlasshouseTweaks.getInstance().getConfig().getString("target-warning");
     public static String ANARCHY_DAY = GlasshouseTweaks.getInstance().getConfig().getString("anarchy-day");
-
-    /**
-     * Global date output format
-     */
     public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
+    // Error Messages
+    public static final String USER_NOT_REGISTERED = GlasshouseTweaks.getInstance().getConfig().getString("user-not-registered");
+    public static final String USER_NOT_ADMIN = GlasshouseTweaks.getInstance().getConfig().getString("user-not-admin");
 
-    // Error messages
-    public static final String USER_NOT_REGISTERED = "You are not a registered user!";
-    public static final String TARGET_NOT_FOUND = "The target was not found in the registry. Either they are not a registered user, or" +
-            " you spelled their name incorrectly.";
-    public static final String INVALID_PRICE = "Your price has to be an integer.";
-    public static final String PRICE_TOO_LOW = "Your price has to be greater than " + MINIMUM_HIT_PRICE + " diamonds.";
-    public static final String CONTRACTOR_NOT_FOUND = "Your contractor was not found in the registry. Either they are not a " +
-            "registered user, or you misspelled their name.";
-    public static final String TARGET_IS_BUSY = "Your target already has an active hit out on them.";
-    public static final String TOO_MANY_HITS = "You already have another hit placed on someone! Either wait until that hit" +
-            " is completed, or remove that hit.";
-    public static final String HIRER_NOT_FOUND = "The hirer was not found in the registry. Either they are not a registered " +
-            "user, or you spelled their name incorrectly.";
-    public static final String CONTRACTOR_UNDER_COOLDOWN = "Your contractor is currently under a cooldown.";
-    public static final String HIRER_UNDER_COOLDOWN = "You are currently under a hiring cooldown.";
-    public static final String TARGET_UNDER_COOLDOWN = "Your target is currently under a targetting cooldown.";
-    public static final String HIRER_BUSY = "You already have an active hit! You cannot have more than one hit at " +
-            "once!";
-    public static final String USER_NOT_ADMIN = "This command requires you to be an admin.";
-    public static final String PLAYER_NOT_FOUND = "The player you have selected was not found. Perhaps you have " +
-            "misspelled their name.";
+    public static final String CONTRACTOR_NOT_FOUND = GlasshouseTweaks.getInstance().getConfig().getString("contractor-not-found");
+    public static final String TARGET_NOT_FOUND = GlasshouseTweaks.getInstance().getConfig().getString("target-not-found");
+    public static final String HIRER_NOT_FOUND = GlasshouseTweaks.getInstance().getConfig().getString("hirer-not-found");
+    public static final String PLAYER_NOT_FOUND = GlasshouseTweaks.getInstance().getConfig().getString("player-not-found");
+
+    public static final String INVALID_AMOUNT = GlasshouseTweaks.getInstance().getConfig().getString("invalid-amount");
+    public static final String PRICE_TOO_LOW = GlasshouseTweaks.getInstance().getConfig().getString("price-too-low");
+    public static final String PRICE_TOO_HIGH = GlasshouseTweaks.getInstance().getConfig().getString("price-too-high") +
+            " The maximum price limit is set at " + MAXIMUM_HIT_PRICE + " diamonds.";
+
+    public static final String TARGET_IS_BUSY = GlasshouseTweaks.getInstance().getConfig().getString("target-is-busy");
+    public static final String USER_BUSY = GlasshouseTweaks.getInstance().getConfig().getString("user-busy");
+    public static final String TOO_MANY_HITS = GlasshouseTweaks.getInstance().getConfig().getString("too-many-hits");
+
+    public static final String CONTRACTOR_UNDER_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getString("contractor-under-cooldown");
+    public static final String HIRER_UNDER_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getString("hirer-under-cooldown");
+    public static final String TARGET_UNDER_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getString("target-under-cooldown");
+
+    public static final String HIRER_IS_TARGET = GlasshouseTweaks.getInstance().getConfig().getString("hirer-is-target");
+    public static final String CONTRACTOR_IS_TARGET = GlasshouseTweaks.getInstance().getConfig().getString("contractor-is-target");
+    public static final String HIRER_IS_CONTRACTOR = GlasshouseTweaks.getInstance().getConfig().getString("hirer-is-contractor");
 }
