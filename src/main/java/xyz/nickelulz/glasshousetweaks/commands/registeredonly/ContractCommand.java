@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class ContractCommand extends CommandBase {
 
     public ContractCommand() {
-        super("contract", 1, 4, true);
+        super("contract", 1, 4, true, "Place a contract, view your contracts, or accept/deny a pending contract.");
     }
 
     @Override
@@ -89,7 +89,7 @@ public class ContractCommand extends CommandBase {
                                 " " + contract.getPrice() + " diamonds.");
                         hirer.directMessage("Your contract kill offer to " + user.getProfile().getName() + " on " +
                                 target.getProfile().getName() + " for " + contract.getPrice() + " diamonds was " +
-                                "accepted.");
+                                "accepted.", ChatColor.GREEN);
                         return true;
                     }
 
@@ -101,7 +101,7 @@ public class ContractCommand extends CommandBase {
                                 contract.getTarget().getProfile().getName() + "for " + contract.getPrice() + " diamonds.");
                         hirer.directMessage("Your contract kill offer to " + user.getProfile().getName() + " on " +
                                 target.getProfile().getName() + " for " + contract.getPrice() + " diamonds was " +
-                                "denied.");
+                                "denied.", ChatColor.RED);
                         return true;
                     }
                 }
@@ -116,17 +116,12 @@ public class ContractCommand extends CommandBase {
                     return true;
                 }
 
-                User target = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
+                User target = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[2]);
                 User contractor = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[3]);
                 int price;
 
-                if (target == null) {
-                    error(sender, ConfigurationConstants.TARGET_NOT_FOUND, getSpecializedSyntax(mode));
-                    return true;
-                }
-
                 try {
-                    price = Integer.parseInt(args[2]);
+                    price = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
                     error(sender, ConfigurationConstants.INVALID_AMOUNT, getSpecializedSyntax(mode));
                     return true;
@@ -139,6 +134,11 @@ public class ContractCommand extends CommandBase {
 
                 if (price > ConfigurationConstants.MAXIMUM_HIT_PRICE) {
                     error(sender, ConfigurationConstants.PRICE_TOO_HIGH);
+                    return true;
+                }
+
+                if (target == null) {
+                    error(sender, ConfigurationConstants.TARGET_NOT_FOUND, getSpecializedSyntax(mode));
                     return true;
                 }
 
@@ -177,7 +177,7 @@ public class ContractCommand extends CommandBase {
                 GlasshouseTweaks.getHitsDatabase().add(new Contract(user, target, price, LocalDateTime.now(), contractor, true));
                 success(sender, String.format("Placed new contract on %s with %s as the contractor for %d diamonds.",
                         target.getProfile().getName(), contractor.getProfile().getName(), price));
-                target.directMessage(ConfigurationConstants.TARGET_WARNING);
+                target.directMessage(ConfigurationConstants.TARGET_WARNING, ChatColor.RED);
                 return true;
             }
 
@@ -237,7 +237,7 @@ public class ContractCommand extends CommandBase {
     public String getSpecializedSyntax(String mode) {
         switch (mode) {
             case "place":
-                return "/contract place <target> <price> <contractor>";
+                return "/contract place <price> <target> <contractor>";
 
             case "accept":
             case "deny":

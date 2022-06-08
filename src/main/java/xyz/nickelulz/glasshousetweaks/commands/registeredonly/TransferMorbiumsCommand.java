@@ -1,5 +1,6 @@
 package xyz.nickelulz.glasshousetweaks.commands.registeredonly;
 
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
@@ -9,7 +10,7 @@ import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
 
 public class TransferMorbiumsCommand extends CommandBase {
     public TransferMorbiumsCommand() {
-        super("transfer", 2, true);
+        super("transfer", 2, true, "Send some of your hard-earned morbiums to someone.");
     }
 
     @Override
@@ -27,6 +28,7 @@ public class TransferMorbiumsCommand extends CommandBase {
             amount = Integer.parseInt(args[0]);
         } catch (NumberFormatException e) {
             error(sender, ConfigurationConstants.INVALID_AMOUNT, getSyntax());
+            return true;
         }
 
         if (recipient == null) {
@@ -47,6 +49,7 @@ public class TransferMorbiumsCommand extends CommandBase {
         success(sender, "Sent " + amount + " morbiums to " + recipient.getProfile().getName() + ".");
         user.increment("morbiums", -amount);
         recipient.increment("morbiums", amount);
+        recipient.directMessage(user.getProfile().getName() + " sent you " + amount + " morbiums.", ChatColor.GREEN);
         return true;
     }
 

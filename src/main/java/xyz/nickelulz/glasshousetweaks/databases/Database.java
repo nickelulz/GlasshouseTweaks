@@ -2,15 +2,14 @@ package xyz.nickelulz.glasshousetweaks.databases;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.bukkit.Bukkit;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.logging.Level;
 
 public abstract class Database<T> {
@@ -19,14 +18,10 @@ public abstract class Database<T> {
     private final Gson jsonParser;
     private final Type jsonTypeFrom;
 
-    public Database(String filename, Class<T> jsonTypeTo, Type jsonTypeFrom, Object typeAdapter, boolean inheritanceMode) {
+    public Database(String filename, Class<T> jsonTypeTo, Type jsonTypeFrom, Object typeAdapter) {
         this.dataset = new ArrayList<>();
         this.database = new File(GlasshouseTweaks.getInstance().getDataFolder().getAbsolutePath() + "/" + filename);
-        // test?
-//        if (inheritanceMode)
-//            this.jsonParser = new GsonBuilder().registerTypeHierarchyAdapter(jsonTypeTo, typeAdapter).setPrettyPrinting().create();
-//        else
-            this.jsonParser = new GsonBuilder().registerTypeAdapter(jsonTypeTo, typeAdapter).setPrettyPrinting().create();
+        this.jsonParser = new GsonBuilder().registerTypeHierarchyAdapter(jsonTypeTo, typeAdapter).setPrettyPrinting().create();
         this.jsonTypeFrom = jsonTypeFrom;
 
         try {
@@ -36,9 +31,6 @@ public abstract class Database<T> {
         }
 
         reload();
-
-        for (T data: dataset)
-            System.out.println(data);
     }
 
     public void ensureExists() throws IOException {
@@ -80,6 +72,19 @@ public abstract class Database<T> {
             if (!(e instanceof IOException || e instanceof NullPointerException))
                 e.printStackTrace();
             return false;
+        }
+    }
+
+    public String toJSON() {
+        try {
+            ensureExists();
+            return jsonParser.toJson(dataset);
+        } catch (Exception e) {
+            GlasshouseTweaks.log(Level.SEVERE, "Could not output database " + database.getName() +
+                    " to String due to " + e.getClass().getName());
+            if (!(e instanceof IOException || e instanceof NullPointerException))
+                e.printStackTrace();
+            return null;
         }
     }
 

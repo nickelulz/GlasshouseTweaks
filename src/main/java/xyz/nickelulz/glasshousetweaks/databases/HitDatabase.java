@@ -123,12 +123,12 @@ public class HitDatabase {
 
 class ActiveHitsDatabase extends Database<Hit> {
     public ActiveHitsDatabase() {
-        super("hits.json", Hit.class, Hit[].class, new JSONHandlers.HitJSON(), true);
+        super("hits.json", Hit.class, Hit[].class, new JSONHandlers.HitJSON());
     }
 }
 
 class CompletedHitsDatabase extends Database<Hit> {
     public CompletedHitsDatabase() {
-        super("completed_hits.json", Hit.class, Hit[].class, new JSONHandlers.HitJSON(), true);
+        super("completed_hits.json", Hit.class, Hit[].class, new JSONHandlers.HitJSON());
     }
 }

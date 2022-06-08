@@ -5,10 +5,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
+import xyz.nickelulz.glasshousetweaks.util.DiscordClientManager;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.logging.Level;
 
 /**
  * Wrapper class for a Player, represents
@@ -114,12 +116,15 @@ public class User {
      * DM's the user on both the server (if they are online) and discord.
      * @return Operation Success Code
      */
-    public void directMessage(String message) {
+    public void directMessage(String message, org.bukkit.ChatColor color) {
         Player ingame = profile.getPlayer();
         if (ingame != null) {
-            ingame.sendMessage(ChatColor.ITALIC + "" + ChatColor.GRAY + message);
+            ingame.sendMessage(color + message);
         }
+        GlasshouseTweaks.log(Level.INFO, "Bot Connected?: " + DiscordClientManager.bot_connected);
         // discord dm
+        if (DiscordClientManager.bot_connected)
+            DiscordClientManager.sendDirectMessageRequest(message, discordId);
     }
 
     /**

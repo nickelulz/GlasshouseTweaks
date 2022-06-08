@@ -6,7 +6,7 @@ import xyz.nickelulz.glasshousetweaks.datatypes.User;
 public final class PlayerDatabase extends Database<User> {
 
     public PlayerDatabase() {
-        super("players.json", User.class, User[].class, new JSONHandlers.UserJSON(), false);
+        super("players.json", User.class, User[].class, new JSONHandlers.UserJSON());
     }
 
     public User findById(String discordId) {

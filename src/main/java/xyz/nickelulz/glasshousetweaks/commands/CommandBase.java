@@ -24,39 +24,45 @@ public abstract class CommandBase extends BukkitCommand implements CommandExecut
     private final int minArguments;
     private final int maxArguments;
     private final boolean playerOnly;
+    private final String description;
 
-    public CommandBase(String command) {
-        this(command, 0);
+    public CommandBase(String command, String description) {
+        this(command, 0, description);
     }
 
-    public CommandBase(String command, boolean playerOnly) {
-        this(command, 0, playerOnly);
+    public CommandBase(String command, boolean playerOnly, String description) {
+        this(command, 0, playerOnly, description);
     }
 
-    public CommandBase(String command, int requiredArguments) {
-        this(command, requiredArguments, requiredArguments);
+    public CommandBase(String command, int requiredArguments, String description) {
+        this(command, requiredArguments, requiredArguments, description);
     }
 
-    public CommandBase(String command, int minArguments, int maxArguments) {
-        this(command, minArguments, maxArguments, false);
+    public CommandBase(String command, int minArguments, int maxArguments, String description) {
+        this(command, minArguments, maxArguments, false, description);
     }
 
-    public CommandBase(String command, int requiredArguments, boolean playerOnly) {
-        this(command, requiredArguments, requiredArguments, playerOnly);
+    public CommandBase(String command, int requiredArguments, boolean playerOnly, String description) {
+        this(command, requiredArguments, requiredArguments, playerOnly, description);
     }
 
-    public CommandBase(String command, int minArguments, int maxArguments, boolean playerOnly) {
+    public CommandBase(String command, int minArguments, int maxArguments, boolean playerOnly, String description) {
         super(command);
 
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
         this.playerOnly = playerOnly;
+        this.description = description;
     }
 
     public CommandBase enableDelay(int delay) {
         this.delay = delay;
         this.delayedPlayers = new ArrayList<>();
         return this;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void removePlayer(Player player) {

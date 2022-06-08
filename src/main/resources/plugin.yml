@@ -6,20 +6,6 @@ authors: [ nickelulz ]
 description: This is a manager plugin for including various tweaks for managing a minecraft server, such as incorporating hits that works alongside a discord bot.
 website: https://github.com/nickelulz/GlasshouseTweaks
 commands:
-  register:
-    description: Register your discord account to the bot (in order to use the hit system.)
-  leaderboard:
-    description: Lists out the leaderboards for kills, deaths, or morbiums.
-  playerinfo:
-    description: Get the information of any player.
-  bounty:
-    description: List out all currently available bounties, or place a new bounty.
-  contract:
-    description: View all of the contracts you are the contractor of, place a new contract, or accept/deny a pending contract.
-  removehit:
-    description: Remove a hit that you placed.
-  illegalkills:
-    description: Manage the list of illegal kills. Requires administrator access.
-    permission: glasshouse.admin
-  transfer:
-    description: Transfer some of your morbiums to someone.
+  ghtweakshelp:
+    description: HELP command for GHTweaks.
+    usage: /<command>

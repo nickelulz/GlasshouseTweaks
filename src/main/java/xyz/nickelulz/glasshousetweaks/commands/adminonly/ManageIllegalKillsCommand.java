@@ -1,6 +1,8 @@
 package xyz.nickelulz.glasshousetweaks.commands.adminonly;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 
 public class ManageIllegalKillsCommand extends CommandBase {
     public ManageIllegalKillsCommand() {
-        super("illegalkills", 1, 2, false);
+        super("illegalkills", 1, 2, false, "Manage and deal with any logged illegal kills.");
     }
 
     @Override
@@ -60,29 +62,16 @@ public class ManageIllegalKillsCommand extends CommandBase {
                     return true;
                 }
 
-                User attacker = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
-                User victim = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[2]);
-
-                if (attacker == null) {
-                    error(sender, "Attacker not found in registry.", getSpecializedSyntax(mode));
-                    return true;
-                }
-
-                if (victim == null) {
-                    error(sender, "Victim not found in registry.", getSpecializedSyntax(mode));
-                    return true;
-                }
-
-                Attack illegalAttack = GlasshouseTweaks.getIllegalkillDatabase().find(attacker, victim);
+                Attack illegalAttack = GlasshouseTweaks.getIllegalkillDatabase().find(args[1], args[2]);
 
                 if (illegalAttack == null) {
-                    error(sender, "There was no illegal attack found with " + victim.getProfile().getName() + " as " +
-                            "the victim and " + attacker.getProfile().getName() + " as the attacker.");
+                    error(sender, "There was no illegal attack found with " + args[1] + " as " +
+                            "the victim and " + args[2] + " as the attacker.");
                     return true;
                 }
 
                 GlasshouseTweaks.getIllegalkillDatabase().remove(illegalAttack);
-                reply(sender, "Removed illegal attack by " + attacker.getProfile().getName() + " on " + victim.getProfile().getName() + ".");
+                reply(sender, "Removed illegal attack by " + args[1] + " on " + args[2] + ".");
 
                 return true;
             }

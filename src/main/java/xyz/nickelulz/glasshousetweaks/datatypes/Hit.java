@@ -43,13 +43,18 @@ abstract public class Hit {
 
     @Override
     public String toString() {
-        return String.format("Placed by %s at %s on %s for %d diamonds.", placer.getProfile().getName(),
-                timePlaced.format(ConfigurationConstants.DATE_FORMAT), target.getProfile().getName(), price);
+        return String.format("Placed by %s at %s on %s for %d diamonds", placer.getProfile().getName(),
+                timePlaced.format(ConfigurationConstants.VISUAL_DATE_FORMAT), target.getProfile().getName(), price);
     }
 
     public String toSimpleString() {
-        return String.format("Target: %s, Placed by %s for %d diamonds.", target.getProfile().getName(),
+        return String.format("Target: %s, Placed by %s for %d diamonds", target.getProfile().getName(),
                 placer.getProfile().getName(), price);
+    }
+
+    public String toSimpleBountyString() {
+        return String.format("%s\'s head - %d diamonds", target.getProfile().getName(),
+                price);
     }
 
     @Override

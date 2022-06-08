@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class LeaderboardCommand extends CommandBase {
 
     public LeaderboardCommand() {
-        super("leaderboard", 1, true);
+        super("leaderboard", 1, true, "Get the leaderboard for kills, deaths, or morbiums.");
     }
 
     @Override
@@ -30,7 +30,7 @@ public class LeaderboardCommand extends CommandBase {
                 for (int i = 0; i < killsLeaderboard.size(); i++)
                     reply(sender, " " + (i+1) + ": " + killsLeaderboard.get(i).getProfile().getName() +
                             " - " + killsLeaderboard.get(i).getKills());
-                reply(sender, "=================");
+                reply(sender, "================");
                 break;
             }
 
@@ -41,7 +41,7 @@ public class LeaderboardCommand extends CommandBase {
                 for (int i = 0; i < deathsLeaderboard.size(); i++)
                     reply(sender, "" + (i+1) + ": " + deathsLeaderboard.get(i).getProfile().getName() +
                             " - " + deathsLeaderboard.get(i).getDeaths());
-                reply(sender, "==================");
+                reply(sender, "=================");
                 break;
             }
 
@@ -51,8 +51,8 @@ public class LeaderboardCommand extends CommandBase {
                 reply(sender, "===== MORBIUMS =====");
                 for (int i = 0; i < morbiumsLeaderboard.size(); i++)
                     reply(sender, "" + (i+1) + ": " + morbiumsLeaderboard.get(i).getProfile().getName() +
-                            " - " + morbiumsLeaderboard.get(i).getMorbiums());
-                reply(sender, "==================");
+                            " - M$" + morbiumsLeaderboard.get(i).getMorbiums());
+                reply(sender, "=================");
                 break;
             }
 
@@ -65,7 +65,7 @@ public class LeaderboardCommand extends CommandBase {
     }
 
     /**
-     * Using selection sort and custom sort method to
+     * Using bubble sort and custom sort method to
      * sort each arraylist
      *
      * modes:
@@ -75,13 +75,13 @@ public class LeaderboardCommand extends CommandBase {
      */
     private void sort(int mode, ArrayList<User> list) {
         for (int i = 0; i < list.size()-1; i++) {
-            int smallestPos = 0;
-            for (int j = i+1; j < list.size(); j++)
-                if (sortHieristic(mode, list.get(i), list.get(j)))
-                    smallestPos = j;
-            User temp = list.get(i);
-            list.set(i, list.get(smallestPos));
-            list.set(smallestPos, temp);
+            for (int j = 0; j < list.size(); j++) {
+                if (sortHieristic(mode, list.get(i), list.get(j))) {
+                    User temp = list.get(i);
+                    list.set(i, list.get(j));
+                    list.set(j, temp);
+                }
+            }
         }
     }
 

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class BountyCommand extends CommandBase {
     public BountyCommand() {
-        super("bounty", 1, 3, true);
+        super("bounty", 1, 3, true, "Place a bounty or list a bounty.");
     }
 
     @Override
@@ -94,7 +94,7 @@ public class BountyCommand extends CommandBase {
 
                 success(sender, "Successfully placed new bounty on " + target.getProfile().getName() +
                         " for " + price + " diamonds.");
-                target.directMessage(ConfigurationConstants.TARGET_WARNING);
+                target.directMessage(ConfigurationConstants.TARGET_WARNING, ChatColor.RED);
                 return true;
             }
 
@@ -115,7 +115,7 @@ public class BountyCommand extends CommandBase {
                     int index = 1;
                     for (Hit h : GlasshouseTweaks.getHitsDatabase().getActiveHits())
                         if (h instanceof Bounty)
-                            reply(sender, index++ + ": " + h.toSimpleString());
+                            reply(sender, index++ + ": " + h.toSimpleString() + ".");
                     reply(sender, "===================");
                     return true;
                 }

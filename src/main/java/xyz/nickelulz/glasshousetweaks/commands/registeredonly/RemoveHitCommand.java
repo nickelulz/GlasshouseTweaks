@@ -1,5 +1,6 @@
 package xyz.nickelulz.glasshousetweaks.commands.registeredonly;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
@@ -11,7 +12,7 @@ import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
 
 public class RemoveHitCommand extends CommandBase {
     public RemoveHitCommand() {
-        super("removehit", 1, 2, true);
+        super("removehit", 1, 2, true, "Remove a hit you placed.");
     }
 
     @Override
@@ -45,9 +46,9 @@ public class RemoveHitCommand extends CommandBase {
             if (hit instanceof Contract) {
                 ((Contract) hit).getContractor().directMessage("A hit you were a contractor for (placed by " +
                         user.getProfile().getName() + " on " + target.getProfile().getName() + ") was removed by the " +
-                        "placer.");
+                        "placer.", ChatColor.DARK_GRAY);
             }
-            target.directMessage("A hit placed on you has been lifted.");
+            target.directMessage("A hit placed on you has been removed by the placer!", ChatColor.DARK_GRAY);
         }
         return true;
     }

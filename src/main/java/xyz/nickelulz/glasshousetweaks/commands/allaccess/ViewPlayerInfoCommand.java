@@ -10,7 +10,7 @@ import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
 public class ViewPlayerInfoCommand extends CommandBase {
 
     public ViewPlayerInfoCommand() {
-        super("playerinfo", 1, true);
+        super("playerinfo", 1, true, "Lookup the info of a specific player.");
     }
 
     @Override
@@ -25,9 +25,10 @@ public class ViewPlayerInfoCommand extends CommandBase {
         reply(sender, "============================================");
         reply(sender, "Username: " + ChatColor.GREEN + player.getProfile().getName());
         // for future: add get discord name
-        reply(sender, "Discord ID: " + ChatColor.GREEN + player.getProfile().getName());
+        reply(sender, "Discord ID: " + ChatColor.GREEN + player.getDiscordId());
         reply(sender, "Kills: " + ChatColor.GREEN + player.getKills());
         reply(sender, "Deaths: " + ChatColor.GREEN + player.getDeaths() + ".");
+        reply(sender, "Morbiums: " + ChatColor.GREEN + player.getMorbiums() + ".");
         String contractorStatus = "Contractor Status: ",
                 targetingStatus = "Targetting Status: ",
                 hiringStatus = "Hit Hiring Status: ";
@@ -42,7 +43,7 @@ public class ViewPlayerInfoCommand extends CommandBase {
         reply(sender, contractorStatus);
 
         if (GlasshouseTweaks.getHitsDatabase().isTarget(player))
-            targetingStatus += ChatColor.RED + "Active Contractor.";
+            targetingStatus += ChatColor.RED + "Active Target.";
         else if (player.targettingCooldown() > 0)
             targetingStatus += ChatColor.DARK_GRAY + player.targettingCooldownString() + ".";
         else
@@ -59,17 +60,23 @@ public class ViewPlayerInfoCommand extends CommandBase {
                 hiringStatus += ChatColor.GREEN + "Ready to place a hit.";
 
             reply(sender, hiringStatus);
-            reply(sender, ChatColor.YELLOW + "Your current hits:");
+
+            reply(sender, "");
 
             if (GlasshouseTweaks.getHitsDatabase().isActivePlacer(player))
-                reply(sender, "You placed: " + GlasshouseTweaks.getHitsDatabase().findHitByPlacer(player).toSimpleString());
+                reply(sender, "\nYou placed: " + ChatColor.YELLOW +
+                        GlasshouseTweaks.getHitsDatabase().findHitByPlacer(player).toSimpleBountyString() + ".");
             else
                 reply(sender, "You have no placed hits currently.");
 
             if (GlasshouseTweaks.getHitsDatabase().isContractor(player))
-                reply(sender, "You are the contractor for: " + GlasshouseTweaks.getHitsDatabase().findActiveContract(player).toSimpleString());
+                reply(sender, "You are the contractor for: " + ChatColor.YELLOW +
+                        GlasshouseTweaks.getHitsDatabase().findActiveContract(player).toSimpleString() + ".");
             else
                 reply(sender, "You are not the contractor for any hits currently.");
+            reply(sender, "============================================");
+        } else {
+            reply(sender, "============================================");
         }
         return true;
     }

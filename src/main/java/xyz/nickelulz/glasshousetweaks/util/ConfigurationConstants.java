@@ -5,6 +5,7 @@ import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import java.time.format.DateTimeFormatter;
 
 public class ConfigurationConstants {
+    public static final String SERVER_NAME = GlasshouseTweaks.getInstance().getConfig().getString("server-name");
     public static final int MINIMUM_HIT_PRICE = GlasshouseTweaks.getInstance().getConfig().getInt("minimum-hit-price");
     public static final int MAXIMUM_HIT_PRICE = GlasshouseTweaks.getInstance().getConfig().getInt("maximum-hit-price");
     public static final int HIRING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("hiring-cooldown");
@@ -12,7 +13,10 @@ public class ConfigurationConstants {
     public static final int TARGETING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("targeting-cooldown");
     public static final String TARGET_WARNING = GlasshouseTweaks.getInstance().getConfig().getString("target-warning");
     public static String ANARCHY_DAY = GlasshouseTweaks.getInstance().getConfig().getString("anarchy-day");
-    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+    public static final DateTimeFormatter VISUAL_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+    public static final DateTimeFormatter DATA_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    public static final int LISTENER_PORT = GlasshouseTweaks.getInstance().getConfig().getInt("listener-port");
+    public static final int BOT_PORT = GlasshouseTweaks.getInstance().getConfig().getInt("bot-port");
 
     // Error Messages
     public static final String USER_NOT_REGISTERED = GlasshouseTweaks.getInstance().getConfig().getString("user-not-registered");

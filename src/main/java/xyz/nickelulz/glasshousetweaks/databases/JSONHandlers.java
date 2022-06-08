@@ -30,15 +30,15 @@ public class JSONHandlers {
 
             String lastPlacedHitRaw = values.get("lastPlacedHit").getAsString();
             LocalDateTime lastPlacedHit = lastPlacedHitRaw == null || lastPlacedHitRaw.equalsIgnoreCase("none") ?
-                    null : LocalDateTime.parse(lastPlacedHitRaw, ConfigurationConstants.DATE_FORMAT);
+                    null : LocalDateTime.parse(lastPlacedHitRaw, ConfigurationConstants.DATA_DATE_FORMAT);
 
             String lastContractedHitRaw = values.get("lastContractedHit").getAsString();
             LocalDateTime lastContractedHit = lastContractedHitRaw == null || lastContractedHitRaw.equalsIgnoreCase("none") ?
-                    null : LocalDateTime.parse(lastContractedHitRaw, ConfigurationConstants.DATE_FORMAT);
+                    null : LocalDateTime.parse(lastContractedHitRaw, ConfigurationConstants.DATA_DATE_FORMAT);
 
             String lastTargetedHitRaw = values.get("lastTargetedHit").getAsString();
             LocalDateTime lastTargetedHit =  lastTargetedHitRaw == null || lastTargetedHitRaw.equalsIgnoreCase("none") ?
-                    null : LocalDateTime.parse(lastTargetedHitRaw, ConfigurationConstants.DATE_FORMAT);
+                    null : LocalDateTime.parse(lastTargetedHitRaw, ConfigurationConstants.DATA_DATE_FORMAT);
 
             return new User(discordId, profile, lastContractedHit, lastTargetedHit, lastPlacedHit, kills, deaths,
                     morbiums);
@@ -54,11 +54,11 @@ public class JSONHandlers {
             json.addProperty("deaths", src.getDeaths());
             json.addProperty("morbiums", src.getMorbiums());
             json.addProperty("lastPlacedHit", (src.getLastPlacedHit() == null) ? "none" :
-                    src.getLastPlacedHit().format(ConfigurationConstants.DATE_FORMAT));
+                    src.getLastPlacedHit().format(ConfigurationConstants.DATA_DATE_FORMAT));
             json.addProperty("lastContractedHit", (src.getLastContractedHit() == null) ? "none" :
-                    src.getLastContractedHit().format(ConfigurationConstants.DATE_FORMAT));
+                    src.getLastContractedHit().format(ConfigurationConstants.DATA_DATE_FORMAT));
             json.addProperty("lastTargetedHit", (src.getLastTargetedHit() == null) ? "none" :
-                    src.getLastTargetedHit().format(ConfigurationConstants.DATE_FORMAT));
+                    src.getLastTargetedHit().format(ConfigurationConstants.DATA_DATE_FORMAT));
             return json;
         }
 
@@ -74,7 +74,7 @@ public class JSONHandlers {
             User target = GlasshouseTweaks.getPlayersDatabase().findByIGN(in.get("target").getAsString());
             int price = in.get("price").getAsInt();
             LocalDateTime timePlaced = LocalDateTime.parse(in.get("timePlaced").getAsString(),
-                    ConfigurationConstants.DATE_FORMAT);
+                    ConfigurationConstants.DATA_DATE_FORMAT);
 
             String claimerString = in.get("claimer").getAsString();
             boolean claimed = !claimerString.equals("none");
@@ -87,7 +87,7 @@ public class JSONHandlers {
                     User claimer = in.get("claimer").getAsString().equals("none") ? null :
                             GlasshouseTweaks.getPlayersDatabase().findByIGN(in.get("claimer").getAsString());
                     LocalDateTime timeClaimed = in.get("timeClaimed").getAsString().equals("none") ? null :
-                            LocalDateTime.parse(in.get("timeClaimed").getAsString(), ConfigurationConstants.DATE_FORMAT);
+                            LocalDateTime.parse(in.get("timeClaimed").getAsString(), ConfigurationConstants.DATA_DATE_FORMAT);
                     out = new Contract(placer, target, price, timePlaced, contractor, timeClaimed, claimer);
                 } else {
                     out = new Contract(placer, target, price, timePlaced, contractor, pending);
@@ -98,7 +98,7 @@ public class JSONHandlers {
                     User claimer = in.get("claimer").getAsString().equals("none") ? null :
                             GlasshouseTweaks.getPlayersDatabase().findByIGN(in.get("claimer").getAsString());
                     LocalDateTime timeClaimed = in.get("timeClaimed").getAsString().equals("none") ? null :
-                            LocalDateTime.parse(in.get("timeClaimed").getAsString(), ConfigurationConstants.DATE_FORMAT);
+                            LocalDateTime.parse(in.get("timeClaimed").getAsString(), ConfigurationConstants.DATA_DATE_FORMAT);
                     out = new Bounty(placer, target, price, timePlaced, claimer, timeClaimed);
                 } else {
                     out = new Bounty(placer, target, price, timePlaced);
@@ -114,10 +114,10 @@ public class JSONHandlers {
             json.addProperty("placer", src.getPlacer().getProfile().getName());
             json.addProperty("target", src.getTarget().getProfile().getName());
             json.addProperty("price", src.getPrice());
-            json.addProperty("timePlaced", src.getTimePlaced().format(ConfigurationConstants.DATE_FORMAT));
+            json.addProperty("timePlaced", src.getTimePlaced().format(ConfigurationConstants.DATA_DATE_FORMAT));
             json.addProperty("claimer", (src.getClaimer() == null) ? "none" : src.getClaimer().getProfile().getName());
             json.addProperty("timeClaimed", (src.getTimeClaimed() == null) ? "none" :
-                    src.getTimeClaimed().format(ConfigurationConstants.DATE_FORMAT));
+                    src.getTimeClaimed().format(ConfigurationConstants.DATA_DATE_FORMAT));
             if (src instanceof Contract) {
                 Contract contract = (Contract) src;
                 json.addProperty("type", "contract");
@@ -134,19 +134,23 @@ public class JSONHandlers {
         @Override
         public Attack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject in = json.getAsJsonObject();
-            Player attacker = Bukkit.getPlayer(in.get("attacker").getAsString());
-            Player victim = Bukkit.getPlayer(in.get("victim").getAsString());
+            OfflinePlayer attacker = Bukkit.getOfflinePlayer( UUID.fromString(in.get("attackerUUID").getAsString()) );
+            OfflinePlayer victim = Bukkit.getOfflinePlayer( UUID.fromString(in.get("victimUUID").getAsString()) );
+            String attackerName = in.get("attackerName").getAsString();
+            String victimName = in.get("victimName").getAsString();
             LocalDateTime timeCommitted = LocalDateTime.parse(in.get("timeCommitted").getAsString(),
-                    ConfigurationConstants.DATE_FORMAT);
-            return new Attack(attacker, victim, timeCommitted);
+                    ConfigurationConstants.DATA_DATE_FORMAT);
+            return new Attack(attacker, attackerName, victim, victimName, timeCommitted);
         }
 
         @Override
         public JsonElement serialize(Attack src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject json = new JsonObject();
-            json.addProperty("attacker", src.getAttacker().getName());
-            json.addProperty("victim", src.getVictim().getName());
-            json.addProperty("timeCommitted", src.getTime().format(ConfigurationConstants.DATE_FORMAT));
+            json.addProperty("attackerUUID", src.getAttacker().getUniqueId().toString());
+            json.addProperty("attackerName", src.getAttackerName());
+            json.addProperty("victimUUID", src.getVictim().getUniqueId().toString());
+            json.addProperty("victimName", src.getVictimName());
+            json.addProperty("timeCommitted", src.getTime().format(ConfigurationConstants.DATA_DATE_FORMAT));
             return json;
         }
     }
