@@ -1,7 +1,9 @@
 package xyz.nickelulz.glasshousetweaks.databases;
 
+import org.bukkit.ChatColor;
 import xyz.nickelulz.glasshousetweaks.datatypes.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class HitDatabase {
@@ -38,7 +40,7 @@ public class HitDatabase {
 
     public Hit findHitByTarget(User target) {
         for (Hit h: activeHitsDatabase.getDataset())
-            if (h.getTarget().equals(target))
+            if (h.getTarget().equals(target) && h instanceof Bounty || (h instanceof Contract && !((Contract)h).isPending()))
                 return h;
         return null;
     }
@@ -100,8 +102,22 @@ public class HitDatabase {
     }
 
     public boolean claim(Hit hit) {
-        hit.getPlacer().increment("morbiums", 1);
-        return remove(hit) && completedHitsDatabase.add(hit);
+        boolean success = remove(hit) && completedHitsDatabase.add(hit);
+        if (success) {
+            hit.getPlacer().directMessage(String.format("Your hit on %s for %d diamonds was claimed by %s " +
+                    "successfully.", hit.getTarget().getProfile().getName(), hit.getPrice(),
+                    hit.getClaimer().getProfile().getName()), ChatColor.GREEN);
+            hit.getTarget().directMessage(String.format("%s executed a hit on you! All's fair in war...",
+                    hit.getClaimer().getProfile().getName()), ChatColor.RED);
+            hit.getClaimer().directMessage(String.format("Successfully claimed hit on %s for %d diamonds!",
+                    hit.getTarget().getProfile().getName(), hit.getPrice()), ChatColor.GREEN);
+            hit.getPlacer().increment("morbiums", 1);
+            hit.getTarget().setLastTargetedHit(LocalDateTime.now());
+            hit.getPlacer().setLastPlacedHit(LocalDateTime.now());
+            if (hit instanceof Contract)
+                ((Contract) hit).getContractor().setLastContractedHit(LocalDateTime.now());
+        }
+        return success;
     }
 
     public boolean save() {

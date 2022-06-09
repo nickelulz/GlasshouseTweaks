@@ -27,7 +27,7 @@ public class RegisterCommand extends CommandBase {
             return true;
         }
 
-        String discordName = DiscordClientManager.registerRequest(args[0]);
+        String discordName = DiscordClientManager.registerRequest(args[0].replace("**"," "));
         if (discordName == null) {
             error(sender, "Could not register you, as the name you input could not be found. Make sure to check your " +
                     "spelling and capitalization, and remember that the discord format is name#0000", getSyntax());

@@ -22,13 +22,13 @@ public class ViewPlayerInfoCommand extends CommandBase {
             return true;
         }
 
-        reply(sender, "============================================");
-        reply(sender, "Username: " + ChatColor.GREEN + player.getProfile().getName());
+        reply(sender, ChatColor.YELLOW + "-----------------------------------------------------------");
+        reply(sender, "Username: " + ChatColor.WHITE + player.getProfile().getName());
         // for future: add get discord name
-        reply(sender, "Discord ID: " + ChatColor.GREEN + player.getDiscordId());
-        reply(sender, "Kills: " + ChatColor.GREEN + player.getKills());
-        reply(sender, "Deaths: " + ChatColor.GREEN + player.getDeaths() + ".");
-        reply(sender, "Morbiums: " + ChatColor.GREEN + player.getMorbiums() + ".");
+        reply(sender, "Discord ID: " + ChatColor.WHITE + player.getDiscordId());
+        reply(sender, "Kills: " + ChatColor.WHITE + player.getKills());
+        reply(sender, "Deaths: " + ChatColor.WHITE + player.getDeaths());
+        reply(sender, "Morbiums: " + ChatColor.WHITE + player.getMorbiums());
         String contractorStatus = "Contractor Status: ",
                 targetingStatus = "Targetting Status: ",
                 hiringStatus = "Hit Hiring Status: ";
@@ -38,7 +38,7 @@ public class ViewPlayerInfoCommand extends CommandBase {
         else if (player.contractingCooldown() > 0)
             contractorStatus += ChatColor.DARK_GRAY + player.contractingCooldownString() + ".";
         else
-            contractorStatus += ChatColor.GREEN + "Available.";
+            contractorStatus += ChatColor.GREEN + "Available for a contract.";
 
         reply(sender, contractorStatus);
 
@@ -55,7 +55,7 @@ public class ViewPlayerInfoCommand extends CommandBase {
             if (GlasshouseTweaks.getHitsDatabase().isContractor(player))
                 hiringStatus += ChatColor.RED + "Has a placed hit.";
             else if (player.hiringCooldown() > 0)
-                hiringStatus += ChatColor.DARK_GRAY + player.hiringCooldownString() + ".";
+                hiringStatus += ChatColor.GOLD + player.hiringCooldownString() + ".";
             else
                 hiringStatus += ChatColor.GREEN + "Ready to place a hit.";
 
@@ -74,9 +74,9 @@ public class ViewPlayerInfoCommand extends CommandBase {
                         GlasshouseTweaks.getHitsDatabase().findActiveContract(player).toSimpleString() + ".");
             else
                 reply(sender, "You are not the contractor for any hits currently.");
-            reply(sender, "============================================");
+            reply(sender, ChatColor.YELLOW + "-----------------------------------------------------------");
         } else {
-            reply(sender, "============================================");
+            reply(sender, ChatColor.YELLOW + "-----------------------------------------------------------");
         }
         return true;
     }

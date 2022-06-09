@@ -136,7 +136,7 @@ public abstract class CommandBase extends BukkitCommand implements CommandExecut
 
     public void reply(CommandSender sender, String... messages) {
         for (String message: messages)
-            sender.sendMessage(ChatColor.GRAY + message);
+            sender.sendMessage(ChatColor.WHITE + message);
     }
 
     public void success(CommandSender sender, String message) {

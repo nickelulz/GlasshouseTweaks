@@ -15,7 +15,8 @@ import java.util.ArrayList;
 public class ContractCommand extends CommandBase {
 
     public ContractCommand() {
-        super("contract", 1, 4, true, "Place a contract, view your contracts, or accept/deny a pending contract.");
+        super("contract", 1, 4, true, "Place a contract, view your contracts (except any you placed), or accept/deny " +
+                "a pending contract.");
     }
 
     @Override
@@ -177,6 +178,9 @@ public class ContractCommand extends CommandBase {
                 GlasshouseTweaks.getHitsDatabase().add(new Contract(user, target, price, LocalDateTime.now(), contractor, true));
                 success(sender, String.format("Placed new contract on %s with %s as the contractor for %d diamonds.",
                         target.getProfile().getName(), contractor.getProfile().getName(), price));
+                contractor.directMessage(String.format("%s is offering you %d diamonds to contract kill %s. Use " +
+                        "/contract accept or /contract deny (in-game) to respond.", user.getProfile().getName(),
+                                price, target.getProfile().getName()), ChatColor.GRAY);
                 target.directMessage(ConfigurationConstants.TARGET_WARNING, ChatColor.RED);
                 return true;
             }
@@ -196,7 +200,8 @@ public class ContractCommand extends CommandBase {
                         active = c;
                 userContracts.remove(active);
 
-                reply(sender, "===== CONTRACTS: =====");
+                reply(sender, ChatColor.YELLOW + "-------------[" + ChatColor.WHITE + " CONTRACTS " +
+                        ChatColor.YELLOW + "]----------");
 
                 if (active == null)
                     reply(sender, "You have no active contract.");
@@ -213,7 +218,8 @@ public class ContractCommand extends CommandBase {
                         reply(sender, (i+1) + ": " + userContracts.get(i).toSimpleString() + ".");
                 }
 
-                reply(sender, "=====================");
+                reply(sender, ChatColor.GRAY + "(To see a hit you placed, use /playerinfo <your ign>");
+                reply(sender,  ChatColor.YELLOW + "-------------------------------------");
 
                 break;
             }
@@ -233,6 +239,7 @@ public class ContractCommand extends CommandBase {
     public void sendSpecializedSyntax(CommandSender sender, String mode) {
         sender.sendMessage(ChatColor.GRAY + getSpecializedSyntax(mode));
     }
+
 
     public String getSpecializedSyntax(String mode) {
         switch (mode) {

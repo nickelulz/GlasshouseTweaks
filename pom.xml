@@ -43,7 +43,6 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputDirectory>/home/mufaro/Programming Projects/Test Minecraft Server/plugins</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

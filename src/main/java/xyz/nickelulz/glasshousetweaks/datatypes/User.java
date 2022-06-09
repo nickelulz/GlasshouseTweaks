@@ -81,7 +81,7 @@ public class User {
      */
     public String hiringCooldownString() {
         int cooldown = hiringCooldown();
-        return String.format("%d hours, %d seconds", cooldown / 60, cooldown % 60);
+        return String.format("%d hours, %d minutes", cooldown / 60, cooldown % 60);
     }
 
     /**
@@ -109,7 +109,7 @@ public class User {
      */
     public String targettingCooldownString() {
         int cooldown = targettingCooldown();
-        return String.format("%d hours, %d seconds", cooldown / 60, cooldown % 60);
+        return String.format("%d hours, %d minutes", cooldown / 60, cooldown % 60);
     }
 
     /**
@@ -153,7 +153,7 @@ public class User {
      */
     public String contractingCooldownString() {
         int cooldown = contractingCooldown();
-        return String.format("%d hours, %d seconds", cooldown / 60, cooldown % 60);
+        return String.format("%d hours, %d minutes", cooldown / 60, cooldown % 60);
     }
 
     @Override

@@ -61,12 +61,10 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
             player.sendMessage(ChatColor.GRAY + "You are not registered. Make sure to register using " +
                     ChatColor.DARK_GREEN + "/register" + ChatColor.GRAY + ", as unregistered players cannot break " +
                     "blocks or see.");
-            player.setPlayerListName("You are not registered! Use /register to register!");
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 10));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 100000000));
+            player.setPlayerListFooter("You are not registered! Use /register to register!");
         } else {
             if (ConfigurationConstants.SERVER_NAME != null && ConfigurationConstants.SERVER_NAME.trim() != "")
-                player.setPlayerListName(ConfigurationConstants.SERVER_NAME);
+                player.setPlayerListHeader(ConfigurationConstants.SERVER_NAME);
         }
     }
 
@@ -91,6 +89,8 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                     // Initial check: the killer is countering a contract placed on them.
                     Contract victimActiveContract = hits.findContract(killerUser, victimUser);
                     if (victimActiveContract != null) {
+                        victimActiveContract.setClaimer(victimUser);
+                        victimActiveContract.setTimeClaimed(LocalDateTime.now());
                         hits.claim(victimActiveContract);
                         illegal = false;
                     }
@@ -111,6 +111,8 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                              */
                             Contract killerActiveContract = hits.findContract(victimUser, killerUser);
                             if (killerActiveContract != null) {
+                                killerActiveContract.setClaimer(killerUser);
+                                killerActiveContract.setTimeClaimed(LocalDateTime.now());
                                 hits.claim(killerActiveContract);
                                 illegal = false;
                             }
@@ -122,6 +124,8 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                                  */
                                 Bounty activeBounty = hits.findBountyByTarget(victimUser);
                                 if (activeBounty != null) {
+                                    activeBounty.setClaimer(killerUser);
+                                    activeBounty.setTimeClaimed(LocalDateTime.now());
                                     hits.claim(activeBounty);
                                     illegal = false;
                                 }

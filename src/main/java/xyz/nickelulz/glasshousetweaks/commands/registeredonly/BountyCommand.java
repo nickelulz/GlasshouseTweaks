@@ -77,7 +77,7 @@ public class BountyCommand extends CommandBase {
 
                 if (user.hiringCooldown() > 0) {
                     error(sender, ConfigurationConstants.HIRER_UNDER_COOLDOWN);
-                    reply(sender, "Cooldown time left: " + user.hiringCooldownString());
+                    error(sender, "Cooldown time left: " + user.hiringCooldownString());
                     return true;
                 }
 
