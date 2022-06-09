@@ -22,7 +22,7 @@ public class ViewPlayerInfoCommand extends CommandBase {
             return true;
         }
 
-        reply(sender, ChatColor.YELLOW + "-----------------------------------------------------------");
+        reply(sender, ChatColor.YELLOW + "-------------------------------------------------");
         reply(sender, "Username: " + ChatColor.WHITE + player.getProfile().getName());
         // for future: add get discord name
         reply(sender, "Discord ID: " + ChatColor.WHITE + player.getDiscordId());
@@ -74,9 +74,9 @@ public class ViewPlayerInfoCommand extends CommandBase {
                         GlasshouseTweaks.getHitsDatabase().findActiveContract(player).toSimpleString() + ".");
             else
                 reply(sender, "You are not the contractor for any hits currently.");
-            reply(sender, ChatColor.YELLOW + "-----------------------------------------------------------");
+            reply(sender, ChatColor.YELLOW + "-------------------------------------------------");
         } else {
-            reply(sender, ChatColor.YELLOW + "-----------------------------------------------------------");
+            reply(sender, ChatColor.YELLOW + "-------------------------------------------------");
         }
         return true;
     }

@@ -12,11 +12,12 @@ public class ConfigurationConstants {
     public static final int CONTRACTING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("contracting-cooldown");
     public static final int TARGETING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("targeting-cooldown");
     public static final String TARGET_WARNING = GlasshouseTweaks.getInstance().getConfig().getString("target-warning");
-    public static String ANARCHY_DAY = GlasshouseTweaks.getInstance().getConfig().getString("anarchy-day");
+    public static String ANARCHY_DAY = GlasshouseTweaks.getInstance().getConfig().getString("anarchy-day").toLowerCase();
     public static final DateTimeFormatter VISUAL_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     public static final DateTimeFormatter DATA_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     public static final int LISTENER_PORT = GlasshouseTweaks.getInstance().getConfig().getInt("listener-port");
     public static final int BOT_PORT = GlasshouseTweaks.getInstance().getConfig().getInt("bot-port");
+    public static final String adminPermission = GlasshouseTweaks.getInstance().getConfig().getString("admin-perm");
 
     // Error Messages
     public static final String USER_NOT_REGISTERED = GlasshouseTweaks.getInstance().getConfig().getString("user-not-registered");

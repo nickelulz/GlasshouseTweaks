@@ -6,6 +6,6 @@ authors: [ nickelulz ]
 description: This is a manager plugin for including various tweaks for managing a minecraft server, such as incorporating hits that works alongside a discord bot.
 website: https://github.com/nickelulz/GlasshouseTweaks
 commands:
-  ghtweakshelp:
-    description: HELP command for GHTweaks.
+  glasshousetweaks:
+    description: Main command.
     usage: /<command>

@@ -200,7 +200,7 @@ public class ContractCommand extends CommandBase {
                         active = c;
                 userContracts.remove(active);
 
-                reply(sender, ChatColor.YELLOW + "-------------[" + ChatColor.WHITE + " CONTRACTS " +
+                reply(sender, ChatColor.YELLOW + "---------------[" + ChatColor.WHITE + " CONTRACTS " +
                         ChatColor.YELLOW + "]----------");
 
                 if (active == null)
@@ -219,7 +219,7 @@ public class ContractCommand extends CommandBase {
                 }
 
                 reply(sender, ChatColor.GRAY + "(To see a hit you placed, use /playerinfo <your ign>");
-                reply(sender,  ChatColor.YELLOW + "-------------------------------------");
+                reply(sender,  ChatColor.YELLOW + "------------------------------------");
 
                 break;
             }

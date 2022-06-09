@@ -19,10 +19,10 @@ public class HelpCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            reply(sender, ChatColor.YELLOW + "-------------- " + ChatColor.WHITE + "GlasshouseTweaks Commands " +
-                    ChatColor.YELLOW + "------------");
+            reply(sender, ChatColor.YELLOW + "-------------[ " + ChatColor.WHITE + "GlasshouseTweaks Commands " +
+                    ChatColor.YELLOW + "]-----------");
             reply(sender, "1. /register - " + CommandManager.REGISTER_COMMAND.getDescription());
-            reply(sender, "2. /ghtweakshelp - View this information.");
+            reply(sender, "2. /glasshousetweaks - View this information.");
             reply(sender, "3. /playerinfo - " + CommandManager.VIEW_PLAYER_INFO_COMMAND.getDescription());
             reply(sender, "4. /leaderboard - " + CommandManager.LEADERBOARD_COMMAND.getDescription());
             reply(sender, ChatColor.YELLOW + "4. /bounty - " + CommandManager.BOUNTY_COMMAND.getDescription());
@@ -30,11 +30,17 @@ public class HelpCommand implements CommandExecutor {
             reply(sender, ChatColor.YELLOW + "6. /removehit - " + CommandManager.REMOVE_HIT_COMMAND.getDescription());
             reply(sender, ChatColor.YELLOW + "7. /transfer - " + CommandManager.TRANSFER_MORBIUMS_COMMAND.getDescription());
             reply(sender, ChatColor.RED + "8. /illegalkills - " + CommandManager.MANAGE_ILLEGAL_KILLS_COMMAND.getDescription());
-            reply(sender, ChatColor.YELLOW + "---------------------------------------------------");
+            reply(sender, "");
+            reply(sender,
+                    ChatColor.ITALIC + "" + ChatColor.GRAY + "(" + ChatColor.YELLOW + "Yellow " + ChatColor.GRAY +
+                            "commands require you to be " + ChatColor.YELLOW + "registered " + ChatColor.GRAY + "and " +
+                            ChatColor.RED + "red " + ChatColor.GRAY + "commands require you to have " +
+                            ChatColor.RED + "administrator " + ChatColor.GRAY + "access.)");
+            reply(sender, ChatColor.YELLOW + "--------------------------------------------------");
             return true;
         } else {
             switch (args[0]) {
-                case "ghtweakshelp":
+                case "glasshousetweaks":
                     reply(sender, "List out detailed information on each of the commands on this plugin.");
                     reply(sender, "Usage: " + ChatColor.GRAY + getSyntax());
                     return true;
@@ -94,7 +100,7 @@ public class HelpCommand implements CommandExecutor {
     }
 
     public String getSyntax() {
-        return "/ghtweakshelp (to list all commands) or /glasshousetweakshelp <command> (for specialized help)";
+        return "/glasshousetweaks (to list all commands) or /glasshousetweaks <command> (for specialized help)";
     }
 
     public void simpleResponse(CommandSender sender, CommandBase command, boolean requiresRegistered,

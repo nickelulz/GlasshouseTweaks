@@ -56,7 +56,7 @@ public class CommandManager {
         registerCommand("register", REGISTER_COMMAND);
         registerCommand("leaderboard", LEADERBOARD_COMMAND);
         registerCommand("playerinfo", VIEW_PLAYER_INFO_COMMAND);
-        GlasshouseTweaks.getInstance().getCommand("ghtweakshelp").setExecutor(HELP_COMMAND);
+        GlasshouseTweaks.getInstance().getCommand("glasshousetweaks").setExecutor(HELP_COMMAND);
 
         // Registered Only
         registerCommand("bounty", BOUNTY_COMMAND);

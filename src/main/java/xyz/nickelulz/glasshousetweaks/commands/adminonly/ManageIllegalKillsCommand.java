@@ -30,7 +30,7 @@ public class ManageIllegalKillsCommand extends CommandBase {
                 return true;
             }
 
-            if (!user.getProfile().getPlayer().hasPermission("glasshouse.admin")) {
+            if (!user.getProfile().getPlayer().hasPermission(ConfigurationConstants.adminPermission)) {
                 error(sender, ConfigurationConstants.USER_NOT_ADMIN);
                 return true;
             }

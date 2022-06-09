@@ -162,7 +162,7 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                             killer.getName(), victim.getName()));
                 else
                     broadcast(String.format(ChatColor.RED + "%s illegally killed %s! (You are not allowed to kill " +
-                            "without a hit " + ChatColor.GREEN + "unless it is a saturday" + ChatColor.RED + ".)",
+                            "without a hit " + ChatColor.GREEN + "unless it is a " + ConfigurationConstants.ANARCHY_DAY + "" + ChatColor.RED + ".)",
                             killer.getName(), victim.getName()));
                 illegalKills.add(new Attack(killer, killer.getName(), victim, victim.getName(), LocalDateTime.now()));
             }

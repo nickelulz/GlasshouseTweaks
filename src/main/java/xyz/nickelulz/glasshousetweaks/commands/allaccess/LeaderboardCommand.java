@@ -26,33 +26,33 @@ public class LeaderboardCommand extends CommandBase {
             case "kills": {
                 ArrayList<User> killsLeaderboard = new ArrayList<>(GlasshouseTweaks.getPlayersDatabase().getDataset());
                 sort(1, killsLeaderboard);
-                reply(sender, "===== KILLS =====");
+                reply(sender, ChatColor.YELLOW + "-----[" + ChatColor.WHITE + " KILLS " + ChatColor.YELLOW + "]-----");
                 for (int i = 0; i < killsLeaderboard.size(); i++)
                     reply(sender, " " + (i+1) + ": " + killsLeaderboard.get(i).getProfile().getName() +
                             " - " + killsLeaderboard.get(i).getKills());
-                reply(sender, "================");
+                reply(sender, ChatColor.YELLOW + "-----------------");
                 break;
             }
 
             case "deaths": {
                 ArrayList<User> deathsLeaderboard = new ArrayList<>(GlasshouseTweaks.getPlayersDatabase().getDataset());
                 sort(0, deathsLeaderboard);
-                reply(sender, "===== DEATHS =====");
+                reply(sender, ChatColor.YELLOW + "-----[" + ChatColor.WHITE + " DEATHS " + ChatColor.YELLOW + "]-----");
                 for (int i = 0; i < deathsLeaderboard.size(); i++)
                     reply(sender, "" + (i+1) + ": " + deathsLeaderboard.get(i).getProfile().getName() +
                             " - " + deathsLeaderboard.get(i).getDeaths());
-                reply(sender, "=================");
+                reply(sender, ChatColor.YELLOW + "------------------");
                 break;
             }
 
             case "morbiums": {
                 ArrayList<User> morbiumsLeaderboard = new ArrayList<>(GlasshouseTweaks.getPlayersDatabase().getDataset());
                 sort(2, morbiumsLeaderboard);
-                reply(sender, "===== MORBIUMS =====");
+                reply(sender, ChatColor.YELLOW + "-----[" + ChatColor.WHITE + " MORBIUMS " + ChatColor.YELLOW + "]-----");
                 for (int i = 0; i < morbiumsLeaderboard.size(); i++)
                     reply(sender, "" + (i+1) + ": " + morbiumsLeaderboard.get(i).getProfile().getName() +
                             " - M$" + morbiumsLeaderboard.get(i).getMorbiums());
-                reply(sender, "=================");
+                reply(sender, ChatColor.YELLOW + "--------------------");
                 break;
             }
 

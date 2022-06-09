@@ -111,12 +111,14 @@ public class BountyCommand extends CommandBase {
                     return true;
                 }
                 else {
-                    reply(sender, "===== BOUNTIES =====");
+                    reply(sender,
+                            ChatColor.YELLOW + "----------[" + ChatColor.WHITE + " BOUNTIES " + ChatColor.YELLOW +
+                                    "]----------");
                     int index = 1;
                     for (Hit h : GlasshouseTweaks.getHitsDatabase().getActiveHits())
                         if (h instanceof Bounty)
                             reply(sender, index++ + ": " + h.toSimpleString() + ".");
-                    reply(sender, "===================");
+                    reply(sender, ChatColor.YELLOW + "-------------------------------");
                     return true;
                 }
             }

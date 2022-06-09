@@ -44,7 +44,13 @@ bot-port: 3225
 # Leave commented to disable. Disabled by default.
 # server-name:
 
-# COMMAND ERRORS
+# Admin permission for this plugin.
+# Default: glasshouse.admin
+admin-perm: "glasshouse.admin"
+
+##########################
+# COMMAND ERROR MESSAGES #
+##########################
 
 # Permission Errors
 user-not-registered: "The command requires you to be registered."
