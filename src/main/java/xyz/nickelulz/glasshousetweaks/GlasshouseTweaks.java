@@ -11,15 +11,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import xyz.nickelulz.glasshousetweaks.commands.CommandManager;
-import xyz.nickelulz.glasshousetweaks.databases.HitDatabase;
-import xyz.nickelulz.glasshousetweaks.databases.IllegalKillsDatabase;
-import xyz.nickelulz.glasshousetweaks.databases.PlayerDatabase;
-import xyz.nickelulz.glasshousetweaks.datatypes.Attack;
-import xyz.nickelulz.glasshousetweaks.datatypes.Bounty;
-import xyz.nickelulz.glasshousetweaks.datatypes.Contract;
-import xyz.nickelulz.glasshousetweaks.datatypes.User;
+import xyz.nickelulz.glasshousetweaks.databases.*;
+import xyz.nickelulz.glasshousetweaks.datatypes.*;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
 import xyz.nickelulz.glasshousetweaks.util.DiscordClientManager;
+import xyz.nickelulz.glasshousetweaks.util.Utils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +27,8 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
     private static PlayerDatabase players;
     private static HitDatabase hits;
     private static IllegalKillsDatabase illegalKills;
+    private static DuelDatabase duels;
+    private static WarDatabase wars;
 
     @Override
     public void onEnable() {
@@ -48,6 +46,8 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
         players = new PlayerDatabase();
         hits = new HitDatabase();
         illegalKills = new IllegalKillsDatabase();
+        duels = new DuelDatabase();
+        wars = new WarDatabase();
 
         // Discord Bridge
         DiscordClientManager.initialize();
@@ -66,6 +66,11 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
             if (ConfigurationConstants.SERVER_NAME != null && ConfigurationConstants.SERVER_NAME.trim() != "")
                 player.setPlayerListHeader(ConfigurationConstants.SERVER_NAME);
         }
+
+        if (player.isOp()) {
+            player.setPlayerListName(ChatColor.DARK_RED + player.getName());
+            player.setDisplayName(ChatColor.DARK_RED + player.getName());
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -79,12 +84,28 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
             boolean illegal = true;
             boolean registered = false;
 
+            if (Utils.playerEquals(victim, killer)) {
+                illegal = false;
+            }
+
             // Affirms that victim and killer are both registered players
             if (players.isRegistered(victim) && players.isRegistered(killer)) {
                 victimUser = players.findByProfile(victim);
                 killerUser = players.findByProfile(killer);
                 if (victimUser != null && killerUser != null) {
                     registered = true;
+
+                    /**
+                     * Active war between players
+                     */
+                    War war = wars.findWarByOpposingParticipants(victimUser, killerUser);
+                    if (war != null) {
+                        war.incrementPlayerKills(victimUser);
+                        killer.sendMessage(ChatColor.GREEN + "Successfully killed another member of the opposing " +
+                                "army! To victory!");
+                        victim.sendMessage(ChatColor.RED + "You were slain by a member of the opposing army! Stand " +
+                                "tall, and don\'t give up!");
+                    }
 
                     // Initial check: the killer is countering a contract placed on them.
                     Contract victimActiveContract = hits.findContract(killerUser, victimUser);
@@ -98,12 +119,15 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
                     else {
 
                         /**
-                         * Second check: Killer is "countering" a bounty placed on them.
+                         * Second check: Killer is countering a bounty placed on them.
                          */
                         Bounty victimActiveBounty = hits.findBountyByTarget(killerUser);
-                        if (victimActiveBounty != null)
-                            // Cannot claim, but not illegal.
+                        if (victimActiveBounty != null) {
+                            victimActiveBounty.setClaimer(victimUser);
+                            victimActiveBounty.setTimeClaimed(LocalDateTime.now());
+                            hits.claim(victimActiveBounty);
                             illegal = false;
+                        }
                         else {
 
                             /**
@@ -147,6 +171,17 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
             }
 
             /**
+             * Active duel between the players
+             */
+            Duel duel = duels.findActiveDuel(victim, killer);
+            if (duel != null) {
+                GlasshouseTweaks.getDuelsDatabase().remove(duel);
+                killer.sendMessage(ChatColor.GREEN + "You won the duel against " + victim.getName() + "!");
+                victim.sendMessage(ChatColor.RED + "You lost the duel against " + killer.getName() + ". :(");
+                illegal = false;
+            }
+
+            /**
              * Anarchy day active
              */
             if (LocalDate.now().getDayOfWeek().name().equalsIgnoreCase(ConfigurationConstants.ANARCHY_DAY))
@@ -183,6 +218,7 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
         players.save();
         hits.save();
         illegalKills.save();
+        DiscordClientManager.close();
     }
 
     public static GlasshouseTweaks getInstance() {
@@ -209,5 +245,13 @@ public final class GlasshouseTweaks extends JavaPlugin implements Listener {
 
     public static IllegalKillsDatabase getIllegalkillDatabase() {
         return illegalKills;
+    }
+
+    public static DuelDatabase getDuelsDatabase() {
+        return duels;
+    }
+
+    public static WarDatabase getWarsDatabase() {
+        return wars;
     }
 }

@@ -94,7 +94,7 @@ public abstract class Database<T> {
     }
 
     public boolean remove(T input) {
-        return dataset.remove(input);
+        return dataset.remove(input) && save();
     }
 
     public boolean add(T input) {

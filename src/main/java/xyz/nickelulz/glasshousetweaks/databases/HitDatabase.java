@@ -74,8 +74,8 @@ public class HitDatabase {
         return null;
     }
 
-    public boolean isTarget(User target) {
-        return !(findHitByTarget(target) == null);
+    public boolean isTarget(User user) {
+        return !(findHitByTarget(user) == null);
     }
 
     public boolean isPlacer(User user) {

@@ -76,6 +76,13 @@ public class ManageIllegalKillsCommand extends CommandBase {
                 return true;
             }
 
+            case "clear":
+            {
+                GlasshouseTweaks.getIllegalkillDatabase().getDataset().clear();
+                GlasshouseTweaks.getIllegalkillDatabase().save();
+                return true;
+            }
+
             default:
                 sendSyntax(sender);
                 return true;
@@ -98,6 +105,9 @@ public class ManageIllegalKillsCommand extends CommandBase {
 
             case "remove":
                 return "/illegalkills remove <attacker> <victim>";
+
+            case "clear":
+                return "/illegalkills clear";
 
             default:
                 return getSyntax();

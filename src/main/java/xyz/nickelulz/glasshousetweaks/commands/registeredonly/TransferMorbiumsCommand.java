@@ -3,6 +3,7 @@ package xyz.nickelulz.glasshousetweaks.commands.registeredonly;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.commands.CommandBase;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
@@ -15,7 +16,7 @@ public class TransferMorbiumsCommand extends CommandBase {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
-        User user = GlasshouseTweaks.getPlayersDatabase().findByProfile((OfflinePlayer) sender);
+        User user = GlasshouseTweaks.getPlayersDatabase().findByProfile((Player) sender);
         User recipient = GlasshouseTweaks.getPlayersDatabase().findByIGN(args[1]);
         int amount = 0;
 

@@ -1,11 +1,14 @@
 package xyz.nickelulz.glasshousetweaks.commands.allaccess;
 
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.commands.CommandBase;
 import xyz.nickelulz.glasshousetweaks.datatypes.User;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
+import xyz.nickelulz.glasshousetweaks.util.Utils;
 
 public class ViewPlayerInfoCommand extends CommandBase {
 
@@ -51,7 +54,7 @@ public class ViewPlayerInfoCommand extends CommandBase {
 
         reply(sender, targetingStatus);
 
-        if (sender.equals(player.getProfile())) {
+        if (Utils.playerEquals((Player) sender, player.getProfile())) {
             if (GlasshouseTweaks.getHitsDatabase().isContractor(player))
                 hiringStatus += ChatColor.RED + "Has a placed hit.";
             else if (player.hiringCooldown() > 0)
@@ -60,7 +63,6 @@ public class ViewPlayerInfoCommand extends CommandBase {
                 hiringStatus += ChatColor.GREEN + "Ready to place a hit.";
 
             reply(sender, hiringStatus);
-
             reply(sender, "");
 
             if (GlasshouseTweaks.getHitsDatabase().isActivePlacer(player))

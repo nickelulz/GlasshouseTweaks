@@ -13,6 +13,17 @@ contracting-cooldown: 120
 # Default: 4 Hours.
 targeting-cooldown: 240
 
+# The amount of time of cooldown between being allowed
+# to be the target OR the commander (so declaring war
+# or having war declared on you) in hours.
+# Default: 5 days
+war-cooldown: 120
+
+# The amount of time that war lasts
+# in hours.
+# Default: 3 days
+war-length: 72
+
 # The minimum price required to place a hit on someone in diamonds.
 # Default: 10 diamonds.
 minimum-hit-price: 10

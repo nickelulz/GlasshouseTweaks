@@ -6,15 +6,8 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.SimplePluginManager;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.commands.adminonly.ManageIllegalKillsCommand;
-import xyz.nickelulz.glasshousetweaks.commands.allaccess.HelpCommand;
-import xyz.nickelulz.glasshousetweaks.commands.allaccess.LeaderboardCommand;
-import xyz.nickelulz.glasshousetweaks.commands.allaccess.RegisterCommand;
-import xyz.nickelulz.glasshousetweaks.commands.allaccess.ViewPlayerInfoCommand;
-import xyz.nickelulz.glasshousetweaks.commands.registeredonly.BountyCommand;
-import xyz.nickelulz.glasshousetweaks.commands.registeredonly.ContractCommand;
-import xyz.nickelulz.glasshousetweaks.commands.registeredonly.RemoveHitCommand;
-import xyz.nickelulz.glasshousetweaks.commands.registeredonly.TransferMorbiumsCommand;
-import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
+import xyz.nickelulz.glasshousetweaks.commands.allaccess.*;
+import xyz.nickelulz.glasshousetweaks.commands.registeredonly.*;
 
 import java.lang.reflect.Field;
 import java.util.logging.Level;
@@ -29,6 +22,10 @@ public class CommandManager {
     public static final RemoveHitCommand REMOVE_HIT_COMMAND = new RemoveHitCommand();
     public static final TransferMorbiumsCommand TRANSFER_MORBIUMS_COMMAND = new TransferMorbiumsCommand();
     public static final ManageIllegalKillsCommand MANAGE_ILLEGAL_KILLS_COMMAND = new ManageIllegalKillsCommand();
+    public static final CheckRegisterCommand CHECK_REGISTER_COMMAND = new CheckRegisterCommand();
+    public static final DuelCommand DUEL_COMMAND = new DuelCommand();
+    public static final WarCommand WAR_COMMAND = new WarCommand();
+    public static final DirectMessageCommand DIRECT_MESSAGE_COMMAND = new DirectMessageCommand();
 
     public static CommandMap getCommandMap() {
         try {
@@ -56,13 +53,17 @@ public class CommandManager {
         registerCommand("register", REGISTER_COMMAND);
         registerCommand("leaderboard", LEADERBOARD_COMMAND);
         registerCommand("playerinfo", VIEW_PLAYER_INFO_COMMAND);
-        GlasshouseTweaks.getInstance().getCommand("glasshousetweaks").setExecutor(HELP_COMMAND);
+        GlasshouseTweaks.getInstance().getCommand("glasshousetweaks").setExecutor(HELP_COMMAND); // root command
+        registerCommand("checkregister", CHECK_REGISTER_COMMAND);
+        registerCommand("duel", DUEL_COMMAND);
+        registerCommand("dm", DIRECT_MESSAGE_COMMAND);
 
         // Registered Only
         registerCommand("bounty", BOUNTY_COMMAND);
         registerCommand("contract", CONTRACT_COMMAND);
         registerCommand("removehit", REMOVE_HIT_COMMAND);
         registerCommand("transfer", TRANSFER_MORBIUMS_COMMAND);
+        registerCommand("war", WAR_COMMAND);
 
         // Admin Only
         registerCommand("illegalkills", MANAGE_ILLEGAL_KILLS_COMMAND);

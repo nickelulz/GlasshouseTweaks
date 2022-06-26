@@ -33,6 +33,10 @@ public class DiscordClientManager {
     private static HttpServer server;
     private static java.net.http.HttpClient client;
 
+    public static void close() {
+        server.stop(0);
+    }
+
     public static void initialize() {
         try {
             server = HttpServer.create(new InetSocketAddress(ConfigurationConstants.LISTENER_PORT), 0);
@@ -96,12 +100,18 @@ public class DiscordClientManager {
         }
     }
 
-    public static void sendDirectMessageRequest(String message, String id) {
+    public static boolean sendDirectMessageRequest(String message, String id) {
         try {
-            apiPOST("dm/","{\"id\":\"" + id + "\",\"message\":\"" + message + "\"}");
+            String response = apiPOST("dm/","{\"id\":\"" + id + "\",\"message\":\"" + message + "\"}");
+
+            if (response.equalsIgnoreCase("200 OK") || response.equalsIgnoreCase("Success"))
+                return true;
+            return false;
+
         } catch (Exception e) {
             GlasshouseTweaks.log(Level.SEVERE, "Could not DM user " + id);
             e.printStackTrace();
+            return false;
         }
     }
 

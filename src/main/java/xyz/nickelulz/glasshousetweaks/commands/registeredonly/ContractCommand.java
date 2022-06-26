@@ -54,8 +54,8 @@ public class ContractCommand extends CommandBase {
                 Contract contract = GlasshouseTweaks.getHitsDatabase().findContract(target, user);
 
                 if (contract == null) {
-                    error(sender, "Could not find contract against " + target.getProfile().getName() + " with" +
-                            " you as the contractor", getSpecializedSyntax(mode));
+                    error(sender, "Could not find contract against " + target.getProfile().getName() +
+                            " with you as the contractor.", getSpecializedSyntax(mode));
                     return true;
                 }
 
@@ -79,15 +79,15 @@ public class ContractCommand extends CommandBase {
 
                         if (target.targettingCooldown() > 0) {
                             error(sender, ConfigurationConstants.TARGET_UNDER_COOLDOWN);
-                            reply(sender, "Target cooldown time left: " + target.targettingCooldownString());
+                            reply(sender, "Target cooldown time left: " + ChatColor.YELLOW + "" +
+                                    target.targettingCooldownString());
                             return true;
                         }
 
                         contract.setPending(false);
                         // DM placer
-                        success(sender, "Accepted contract from " + contract.getPlacer().getProfile().getName() + " " +
-                                "for" +
-                                " " + contract.getPrice() + " diamonds.");
+                        success(sender, "Accepted contract from " + contract.getPlacer().getProfile().getName() +
+                                " for " + contract.getPrice() + " diamonds.");
                         hirer.directMessage("Your contract kill offer to " + user.getProfile().getName() + " on " +
                                 target.getProfile().getName() + " for " + contract.getPrice() + " diamonds was " +
                                 "accepted.", ChatColor.GREEN);
@@ -99,7 +99,8 @@ public class ContractCommand extends CommandBase {
                         GlasshouseTweaks.getHitsDatabase().remove(contract);
                         // DM placer
                         success(sender, "Denied contract from " + contract.getPlacer().getProfile().getName() + " on " +
-                                contract.getTarget().getProfile().getName() + "for " + contract.getPrice() + " diamonds.");
+                                contract.getTarget().getProfile().getName() + " for " + contract.getPrice() +
+                                " diamonds.");
                         hirer.directMessage("Your contract kill offer to " + user.getProfile().getName() + " on " +
                                 target.getProfile().getName() + " for " + contract.getPrice() + " diamonds was " +
                                 "denied.", ChatColor.RED);
@@ -247,8 +248,9 @@ public class ContractCommand extends CommandBase {
                 return "/contract place <price> <target> <contractor>";
 
             case "accept":
-            case "deny":
                 return "/contract accept <target> <hirer>";
+            case "deny":
+                return "/contract deny <target> <hirer>";
 
             default:
                 return getSyntax();

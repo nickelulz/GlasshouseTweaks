@@ -4,14 +4,13 @@ import com.google.gson.*;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.units.qual.C;
 import xyz.nickelulz.glasshousetweaks.GlasshouseTweaks;
 import xyz.nickelulz.glasshousetweaks.datatypes.*;
 import xyz.nickelulz.glasshousetweaks.util.ConfigurationConstants;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.*;
 
 public class JSONHandlers {
     public static class UserJSON implements JsonSerializer<User>, JsonDeserializer<User> {
@@ -40,8 +39,12 @@ public class JSONHandlers {
             LocalDateTime lastTargetedHit =  lastTargetedHitRaw == null || lastTargetedHitRaw.equalsIgnoreCase("none") ?
                     null : LocalDateTime.parse(lastTargetedHitRaw, ConfigurationConstants.DATA_DATE_FORMAT);
 
-            return new User(discordId, profile, lastContractedHit, lastTargetedHit, lastPlacedHit, kills, deaths,
-                    morbiums);
+            String lastWarRaw = values.get("lastWar").getAsString();
+            LocalDateTime lastWar = lastWarRaw == null || lastWarRaw.equalsIgnoreCase("none") ? null :
+                    LocalDateTime.parse(lastWarRaw, ConfigurationConstants.DATA_DATE_FORMAT);
+
+            return new User(discordId, profile, lastContractedHit, lastTargetedHit, lastPlacedHit, lastWar, kills,
+                    deaths, morbiums);
         }
 
         @Override
@@ -59,6 +62,8 @@ public class JSONHandlers {
                     src.getLastContractedHit().format(ConfigurationConstants.DATA_DATE_FORMAT));
             json.addProperty("lastTargetedHit", (src.getLastTargetedHit() == null) ? "none" :
                     src.getLastTargetedHit().format(ConfigurationConstants.DATA_DATE_FORMAT));
+            json.addProperty("lastWar", (src.getLastWar() == null) ? "none" :
+                    src.getLastWar().format(ConfigurationConstants.DATA_DATE_FORMAT));
             return json;
         }
 
@@ -151,6 +156,96 @@ public class JSONHandlers {
             json.addProperty("victimUUID", src.getVictim().getUniqueId().toString());
             json.addProperty("victimName", src.getVictimName());
             json.addProperty("timeCommitted", src.getTime().format(ConfigurationConstants.DATA_DATE_FORMAT));
+            return json;
+        }
+    }
+
+    public static class DuelJSON implements JsonSerializer<Duel>, JsonDeserializer<Duel> {
+        @Override
+        public Duel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject in = json.getAsJsonObject();
+            OfflinePlayer attackerA = Bukkit.getOfflinePlayer(UUID.fromString(in.get("initiator_uuid").getAsString()));
+            String attackerAName = in.get("initiator_name").getAsString();
+            OfflinePlayer attackerB = Bukkit.getOfflinePlayer(UUID.fromString(in.get("participator_uuid").getAsString()));
+            String attackerBName = in.get("participator_name").getAsString();
+            LocalDateTime time = LocalDateTime.parse(in.get("time").getAsString(),
+                    ConfigurationConstants.DATA_DATE_FORMAT);
+            boolean pending = in.get("pending").getAsBoolean();
+            return new Duel(attackerA, attackerAName, attackerB, attackerBName, time, pending);
+        }
+
+        @Override
+        public JsonElement serialize(Duel src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject json = new JsonObject();
+            json.addProperty("initiator_uuid", src.getInitiator().getUniqueId().toString());
+            json.addProperty("initiator_name", src.getInitiatorName());
+            json.addProperty("participator_uuid", src.getParticipator().getUniqueId().toString());
+            json.addProperty("participator_name", src.getParticipatorName());
+            json.addProperty("time", src.getTime().format(ConfigurationConstants.DATA_DATE_FORMAT));
+            json.addProperty("pending", src.isPending());
+            return json;
+        }
+    }
+
+    public static class WarJSON implements JsonSerializer<War>, JsonDeserializer<War> {
+        private static Gson GSON = new Gson();
+        @Override
+        public War deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject in = json.getAsJsonObject();
+            OfflinePlayer attacking_commander = Bukkit.getOfflinePlayer(
+                    UUID.fromString(in.get("attacking_commander").getAsString()));
+            User attacking_commander_user = GlasshouseTweaks.getPlayersDatabase()
+                    .findByProfile((Player) attacking_commander);
+            OfflinePlayer defending_commander = Bukkit.getOfflinePlayer(
+                    UUID.fromString(in.get("defending_commander").getAsString()));
+            User defending_commander_user = GlasshouseTweaks.getPlayersDatabase()
+                    .findByProfile((Player) defending_commander);
+
+            // Attacking Army Deserialization
+            Map<User, Integer> attacking_army = new TreeMap<>();
+            JsonObject attacking_army_json = in.getAsJsonObject("attacking_army");
+            for (Map.Entry<String, JsonElement> entry: attacking_army_json.entrySet())
+                attacking_army.put(GlasshouseTweaks.getPlayersDatabase().findByProfile(Bukkit.getPlayer(UUID
+                        .fromString(entry.getKey()))), entry.getValue().getAsInt());
+
+            // Defending Army Deserialization
+            Map<User, Integer> defending_army = new TreeMap<>();
+            JsonObject defending_army_json = in.getAsJsonObject("defending_army");
+            for (Map.Entry<String, JsonElement> entry: defending_army_json.entrySet())
+                defending_army.put(GlasshouseTweaks.getPlayersDatabase().findByProfile(Bukkit.getPlayer(UUID
+                        .fromString(entry.getKey()))), entry.getValue().getAsInt());
+
+            LocalDateTime time_declared = LocalDateTime.parse(in.get("time_declared").getAsString(),
+                    ConfigurationConstants.DATA_DATE_FORMAT);
+
+            boolean attacking_commander_over = in.get("ac_over_vote").getAsBoolean();
+            boolean defending_commander_over = in.get("dc_over_vote").getAsBoolean();
+
+            return new War(attacking_commander_user, defending_commander_user, attacking_army, defending_army,
+                    time_declared, attacking_commander_over, defending_commander_over);
+        }
+
+        @Override
+        public JsonElement serialize(War src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject json = new JsonObject();
+            json.addProperty("attacking_commander", src.getAttackingCommander().getProfile().getUniqueId().toString());
+            json.addProperty("defending_commander", src.getDefendingCommander().getProfile().getUniqueId().toString());
+
+            // Attacking Army Serialization
+            JsonObject attacking_army = new JsonObject();
+            for (User player: src.getAttackingArmy().keySet())
+                attacking_army.addProperty(player.getProfile().getName(), src.getAttackingArmy().get(player));
+            json.add("attacking_army", GSON.toJsonTree(src.getAttackingArmyUUIDS()).getAsJsonArray());
+
+            // Defending Army Serialization
+            JsonObject defending_army = new JsonObject();
+            for (User player: src.getDefendingArmy().keySet())
+                defending_army.addProperty(player.getProfile().getName(), src.getDefendingArmy().get(player));
+            json.add("defending_army", GSON.toJsonTree(src.getDefendingArmyUUIDS()).getAsJsonArray());
+
+            json.addProperty("ac_over_vote", src.attacking_commander_vote());
+            json.addProperty("dc_over_vote", src.defending_commander_vote());
+            json.addProperty("time_declared", src.getTimeDeclared().format(ConfigurationConstants.DATA_DATE_FORMAT));
             return json;
         }
     }

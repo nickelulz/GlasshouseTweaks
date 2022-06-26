@@ -11,6 +11,7 @@ public class ConfigurationConstants {
     public static final int HIRING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("hiring-cooldown");
     public static final int CONTRACTING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("contracting-cooldown");
     public static final int TARGETING_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("targeting-cooldown");
+    public static final int WAR_COOLDOWN = GlasshouseTweaks.getInstance().getConfig().getInt("war-cooldown");
     public static final String TARGET_WARNING = GlasshouseTweaks.getInstance().getConfig().getString("target-warning");
     public static String ANARCHY_DAY = GlasshouseTweaks.getInstance().getConfig().getString("anarchy-day").toLowerCase();
     public static final DateTimeFormatter VISUAL_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
